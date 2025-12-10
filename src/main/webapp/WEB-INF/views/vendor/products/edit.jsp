@@ -213,7 +213,7 @@
                                 <div class="product-image-grid mb-3">
                                     <c:forEach items="${productImages}" var="img">
                                         <div class="product-image-item">
-                                            <img src="${img.imageUrl}" alt="Product Image">
+                                            <img src="${img.imageUrl.startsWith('http') ? img.imageUrl : pageContext.request.contextPath.concat(img.imageUrl)}" alt="Product Image">
                                             <c:if test="${img.isFeatured}">
                                                 <span class="featured-badge">Main</span>
                                             </c:if>
@@ -223,7 +223,7 @@
                             </c:if>
                             <c:if test="${not empty product.imageUrl}">
                                 <div class="text-center mb-3">
-                                    <img src="${product.imageUrl}" alt="${product.productName}" class="img-fluid rounded" style="max-height: 200px;">
+                                    <img src="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" alt="${product.productName}" class="img-fluid rounded" style="max-height: 200px;">
                                 </div>
                             </c:if>
                             <form action="${pageContext.request.contextPath}/vendor/products/upload-image/${product.id}" method="post" enctype="multipart/form-data">

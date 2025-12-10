@@ -22,11 +22,28 @@ public class FileStorageService {
 
     @PostConstruct
     public void init() {
-        rootLocation = Paths.get(uploadDir);
+        // Determine upload directory - use external location for Tomcat
+        if (Paths.get(uploadDir).isAbsolute()) {
+            // Absolute path specified in config
+            rootLocation = Paths.get(uploadDir);
+        } else {
+            // Check if running in Tomcat
+            String catalinaBase = System.getProperty("catalina.base");
+            if (catalinaBase != null && !catalinaBase.isEmpty()) {
+                // Running in Tomcat - use external directory (outside WAR)
+                // This ensures files persist across deployments
+                rootLocation = Paths.get(catalinaBase, "uploads");
+            } else {
+                // Development or embedded server - use relative path
+                String projectRoot = System.getProperty("user.dir");
+                rootLocation = Paths.get(projectRoot, uploadDir);
+            }
+        }
+        
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
-            throw new RuntimeException("Could not initialize storage location", e);
+            throw new RuntimeException("Could not initialize storage location: " + rootLocation, e);
         }
     }
 

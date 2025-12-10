@@ -41,7 +41,7 @@ public class VendorProductService {
     @Autowired
     private ProductCategoryService categoryService;
 
-    @Value("${app.upload.dir:uploads}")
+    @Value("${file.upload-dir:uploads}")
     private String uploadDir;
 
     // ==================== CRUD Operations ====================
@@ -235,14 +235,17 @@ public class VendorProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path uploadPath = Paths.get(uploadDir, "products");
+        
+        // Get upload path - use same logic as FileStorageService for Tomcat compatibility
+        Path rootUploadPath = getUploadRootPath();
+        Path uploadPath = rootUploadPath.resolve("products");
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
         Path filePath = uploadPath.resolve(fileName);
-        Files.copy(file.getInputStream(), filePath);
+        Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
         String imageUrl = "/uploads/products/" + fileName;
 
@@ -259,6 +262,30 @@ public class VendorProductService {
         }
 
         return imageUrl;
+    }
+    
+    /**
+     * Get the root upload directory path - handles Tomcat external directory
+     * This ensures files are stored outside WAR and persist across deployments
+     */
+    private Path getUploadRootPath() {
+        // Check if uploadDir is absolute or relative
+        if (Paths.get(uploadDir).isAbsolute()) {
+            // Absolute path specified in config
+            return Paths.get(uploadDir);
+        } else {
+            // Check if running in Tomcat
+            String catalinaBase = System.getProperty("catalina.base");
+            if (catalinaBase != null && !catalinaBase.isEmpty()) {
+                // Running in Tomcat - use external directory (outside WAR)
+                // This ensures files persist across deployments
+                return Paths.get(catalinaBase, "uploads");
+            } else {
+                // Development or embedded server - use relative path
+                String projectRoot = System.getProperty("user.dir");
+                return Paths.get(projectRoot, uploadDir);
+            }
+        }
     }
 
     public void setFeaturedImage(Long productId, Long imageId) {

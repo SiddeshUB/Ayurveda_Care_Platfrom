@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/")
 public class HomeController {
 
     private final HospitalService hospitalService;
@@ -24,7 +26,7 @@ public class HomeController {
         this.userService = userService;
     }
 
-    @GetMapping({"/", "/home"})
+    @RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
     public String home(Authentication auth, Model model) {
         List<Hospital> featuredHospitals = hospitalService.getFeaturedHospitals();
         model.addAttribute("featuredHospitals", featuredHospitals);
@@ -44,31 +46,31 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/about")
+    @RequestMapping(value = "/about", method = RequestMethod.GET)
     public String about(Authentication auth, Model model) {
         addUserToModel(auth, model);
         return "about";
     }
 
-    @GetMapping("/services")
+    @RequestMapping(value = "/services", method = RequestMethod.GET)
     public String services(Authentication auth, Model model) {
         addUserToModel(auth, model);
         return "services";
     }
 
-    @GetMapping("/contact")
+    @RequestMapping(value = "/contact", method = RequestMethod.GET)
     public String contact(Authentication auth, Model model) {
         addUserToModel(auth, model);
         return "contact";
     }
 
-    @GetMapping("/terms-and-conditions")
+    @RequestMapping(value = "/terms-and-conditions", method = RequestMethod.GET)
     public String termsAndConditions(Authentication auth, Model model) {
         addUserToModel(auth, model);
         return "terms-and-conditions";
     }
 
-    @GetMapping("/privacy-policy")
+    @RequestMapping(value = "/privacy-policy", method = RequestMethod.GET)
     public String privacyPolicy(Authentication auth, Model model) {
         addUserToModel(auth, model);
         return "privacy-policy";
@@ -88,7 +90,7 @@ public class HomeController {
         }
     }
 
-    @GetMapping("/access-denied")
+    @RequestMapping(value = "/access-denied", method = RequestMethod.GET)
     public String accessDenied() {
         return "error/access-denied";
     }

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
+@RequestMapping("/")
 public class PublicProfileController {
 
     private final HospitalService hospitalService;

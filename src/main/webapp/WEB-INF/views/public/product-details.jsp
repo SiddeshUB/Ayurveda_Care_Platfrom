@@ -225,16 +225,28 @@
                 <div class="col-lg-5 mb-4">
                     <div class="product-gallery">
                         <div class="main-image">
-                            <img src="${not empty product.imageUrl ? product.imageUrl : '/images/no-product.png'}" alt="${product.productName}" id="mainImage">
+                            <c:choose>
+                                <c:when test="${not empty product.imageUrl}">
+                                    <c:set var="mainImageUrl" value="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" />
+                                    <img src="${mainImageUrl}" alt="${product.productName}" id="mainImage">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="${pageContext.request.contextPath}/images/no-product.png" alt="${product.productName}" id="mainImage">
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                         <c:if test="${not empty productImages}">
                             <div class="thumbnail-images">
-                                <div class="thumbnail active" onclick="changeImage('${product.imageUrl}', this)">
-                                    <img src="${product.imageUrl}" alt="Main">
-                                </div>
+                                <c:if test="${not empty product.imageUrl}">
+                                    <c:set var="mainThumbUrl" value="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" />
+                                    <div class="thumbnail active" onclick="changeImage('${mainThumbUrl}', this)">
+                                        <img src="${mainThumbUrl}" alt="Main">
+                                    </div>
+                                </c:if>
                                 <c:forEach items="${productImages}" var="img">
-                                    <div class="thumbnail" onclick="changeImage('${img.imageUrl}', this)">
-                                        <img src="${img.imageUrl}" alt="Image">
+                                    <c:set var="thumbUrl" value="${img.imageUrl.startsWith('http') ? img.imageUrl : pageContext.request.contextPath.concat(img.imageUrl)}" />
+                                    <div class="thumbnail" onclick="changeImage('${thumbUrl}', this)">
+                                        <img src="${thumbUrl}" alt="Image">
                                     </div>
                                 </c:forEach>
                             </div>
@@ -449,7 +461,14 @@
                             <div class="col-md-3">
                                 <a href="${pageContext.request.contextPath}/products/${sp.slug}" class="text-decoration-none">
                                     <div class="similar-product-card">
-                                        <img src="${not empty sp.imageUrl ? sp.imageUrl : '/images/no-product.png'}" alt="${sp.productName}">
+                                        <c:choose>
+                                            <c:when test="${not empty sp.imageUrl}">
+                                                <img src="${sp.imageUrl.startsWith('http') ? sp.imageUrl : pageContext.request.contextPath.concat(sp.imageUrl)}" alt="${sp.productName}">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${pageContext.request.contextPath}/images/no-product.png" alt="${sp.productName}">
+                                            </c:otherwise>
+                                        </c:choose>
                                         <div class="card-body">
                                             <p class="title text-dark">${sp.productName}</p>
                                             <span class="price">₹<fmt:formatNumber value="${sp.price}"/></span>
