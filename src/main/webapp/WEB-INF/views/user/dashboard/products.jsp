@@ -49,7 +49,7 @@
                         <div class="product-image" style="position: relative; height: 200px; overflow: hidden; background: var(--neutral-sand);">
                             <c:choose>
                                 <c:when test="${not empty product.imageUrl}">
-                                    <img src="${pageContext.request.contextPath}${product.imageUrl}" alt="${product.productName}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" alt="${product.productName}" style="width: 100%; height: 100%; object-fit: cover;">
                                 </c:when>
                                 <c:otherwise>
                                     <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">

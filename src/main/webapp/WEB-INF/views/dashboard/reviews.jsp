@@ -177,10 +177,6 @@
                 <i class="fas fa-box"></i>
                 <span>Packages</span>
             </a>
-            <a href="${pageContext.request.contextPath}/dashboard/products" class="nav-item">
-                <i class="fas fa-shopping-bag"></i>
-                <span>Products</span>
-            </a>
             <a href="${pageContext.request.contextPath}/dashboard/doctors" class="nav-item">
                 <i class="fas fa-user-md"></i>
                 <span>Doctors</span>

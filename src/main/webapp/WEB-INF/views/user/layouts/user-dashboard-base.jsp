@@ -743,6 +743,10 @@
             
             <div class="nav-section">
                 <div class="nav-section-title">Account</div>
+                <a href="${pageContext.request.contextPath}/user/review" class="nav-item ${param.activeNav == 'review' ? 'active' : ''}">
+                    <i class="fas fa-star"></i>
+                    <span>Review</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/user/profile" class="nav-item ${param.activeNav == 'profile' ? 'active' : ''}">
                     <i class="fas fa-user"></i>
                     <span>Profile Settings</span>

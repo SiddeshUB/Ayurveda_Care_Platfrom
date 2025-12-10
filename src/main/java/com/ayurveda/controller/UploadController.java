@@ -78,10 +78,12 @@ public class UploadController {
             // Try relative path from project root (development fallback)
             if (file == null) {
                 String projectRoot = System.getProperty("user.dir");
-                Path relativePath = Paths.get(projectRoot, "uploads", filePath);
-                File relativeFile = relativePath.toFile();
-                if (relativeFile.exists() && relativeFile.isFile()) {
-                    file = relativeFile;
+                if (projectRoot != null) {
+                    Path relativePath = Paths.get(projectRoot, "uploads", filePath);
+                    File relativeFile = relativePath.toFile();
+                    if (relativeFile.exists() && relativeFile.isFile()) {
+                        file = relativeFile;
+                    }
                 }
             }
             
@@ -105,7 +107,21 @@ public class UploadController {
                 }
             }
             
+            // Additional fallback: Try with normalized path separators
+            if (file == null) {
+                // Normalize path separators (handle both / and \)
+                String normalizedPath = filePath.replace("\\", "/");
+                Path normalizedTargetPath = uploadPath.resolve(normalizedPath);
+                File normalizedFile = normalizedTargetPath.toFile();
+                if (normalizedFile.exists() && normalizedFile.isFile()) {
+                    file = normalizedFile;
+                }
+            }
+            
             if (file == null || !file.exists() || !file.isFile()) {
+                // Log for debugging (can be removed in production)
+                System.err.println("UploadController: File not found - " + filePath);
+                System.err.println("UploadController: Searched in - " + uploadPath.resolve(filePath));
                 return ResponseEntity.notFound().build();
             }
             
@@ -119,7 +135,7 @@ public class UploadController {
                     
         } catch (Exception e) {
             e.printStackTrace(); // Log for debugging
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(500).build();
         }
     }
     

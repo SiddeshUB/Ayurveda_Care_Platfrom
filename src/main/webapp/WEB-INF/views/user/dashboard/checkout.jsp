@@ -167,7 +167,7 @@
                             <div class="mb-3">
                                 <c:forEach items="${cartItems}" var="item">
                                     <div class="order-item">
-                                        <img src="${not empty item.product.imageUrl ? item.product.imageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${item.product.productName}">
+                                        <img src="${not empty item.product.imageUrl ? (item.product.imageUrl.startsWith('http') ? item.product.imageUrl : pageContext.request.contextPath.concat(item.product.imageUrl)) : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${item.product.productName}">
                                         <div class="order-item-info">
                                             <div class="order-item-name">${item.product.productName}</div>
                                             <div class="order-item-qty">Qty: ${item.quantity}</div>

@@ -10,6 +10,7 @@ import com.ayurveda.service.HospitalService;
 import com.ayurveda.service.PackageService;
 import com.ayurveda.service.PrescriptionService;
 import com.ayurveda.service.TreatmentService;
+import com.ayurveda.service.HealthRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,7 @@ public class DoctorController {
     private final TreatmentService treatmentService;
     private final PackageService packageService;
     private final BookingService bookingService;
+    private final HealthRecordService healthRecordService;
 
     @Autowired
     public DoctorController(DoctorService doctorService,
@@ -44,7 +46,8 @@ public class DoctorController {
                            PrescriptionService prescriptionService,
                            TreatmentService treatmentService,
                            PackageService packageService,
-                           BookingService bookingService) {
+                           BookingService bookingService,
+                           HealthRecordService healthRecordService) {
         this.doctorService = doctorService;
         this.associationService = associationService;
         this.hospitalService = hospitalService;
@@ -53,6 +56,7 @@ public class DoctorController {
         this.treatmentService = treatmentService;
         this.packageService = packageService;
         this.bookingService = bookingService;
+        this.healthRecordService = healthRecordService;
     }
 
     // Login Page
@@ -632,6 +636,121 @@ public class DoctorController {
         model.addAttribute("doctor", doctor);
         model.addAttribute("treatment", treatment);
         return "doctor/dashboard/treatment-view";
+    }
+
+    // ========== HEALTH RECORDS MANAGEMENT ==========
+    @RequestMapping(value = "/health-records", method = RequestMethod.GET)
+    public String healthRecords(Model model) {
+        Doctor doctor = getCurrentDoctor();
+        if (doctor == null) {
+            return "redirect:/doctor/login";
+        }
+        
+        List<PatientHealthRecord> healthRecords = healthRecordService.getHealthRecordsByDoctor(doctor.getId());
+        
+        model.addAttribute("doctor", doctor);
+        model.addAttribute("healthRecords", healthRecords);
+        return "doctor/dashboard/health-records";
+    }
+
+    @RequestMapping(value = "/health-records/{id}", method = RequestMethod.GET)
+    public String viewHealthRecord(@PathVariable Long id, Model model) {
+        Doctor doctor = getCurrentDoctor();
+        if (doctor == null) {
+            return "redirect:/doctor/login";
+        }
+        
+        PatientHealthRecord record = healthRecordService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Health record not found"));
+        
+        // Security check
+        if (record.getDoctor() != null && !record.getDoctor().getId().equals(doctor.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
+        
+        model.addAttribute("doctor", doctor);
+        model.addAttribute("record", record);
+        return "doctor/dashboard/health-record-view";
+    }
+
+    @RequestMapping(value = "/health-records/create", method = RequestMethod.GET)
+    public String createHealthRecordForm(Model model) {
+        Doctor doctor = getCurrentDoctor();
+        if (doctor == null) {
+            return "redirect:/doctor/login";
+        }
+        
+        model.addAttribute("doctor", doctor);
+        model.addAttribute("record", new PatientHealthRecord());
+        return "doctor/dashboard/health-record-form";
+    }
+
+    @PostMapping("/health-records/create")
+    public String createHealthRecord(@ModelAttribute PatientHealthRecord record,
+                                    @RequestParam(required = false) Long hospitalId,
+                                    RedirectAttributes redirectAttributes) {
+        Doctor doctor = getCurrentDoctor();
+        if (doctor == null) {
+            return "redirect:/doctor/login";
+        }
+        
+        try {
+            healthRecordService.createHealthRecord(doctor.getId(), hospitalId, record);
+            redirectAttributes.addFlashAttribute("success", "Health record created successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/doctor/health-records/create";
+        }
+        
+        return "redirect:/doctor/health-records";
+    }
+
+    @RequestMapping(value = "/health-records/{id}/edit", method = RequestMethod.GET)
+    public String editHealthRecordForm(@PathVariable Long id, Model model) {
+        Doctor doctor = getCurrentDoctor();
+        if (doctor == null) {
+            return "redirect:/doctor/login";
+        }
+        
+        PatientHealthRecord record = healthRecordService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Health record not found"));
+        
+        // Security check
+        if (record.getDoctor() != null && !record.getDoctor().getId().equals(doctor.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
+        
+        model.addAttribute("doctor", doctor);
+        model.addAttribute("record", record);
+        return "doctor/dashboard/health-record-form";
+    }
+
+    @PostMapping("/health-records/{id}/edit")
+    public String updateHealthRecord(@PathVariable Long id,
+                                    @ModelAttribute PatientHealthRecord record,
+                                    RedirectAttributes redirectAttributes) {
+        Doctor doctor = getCurrentDoctor();
+        if (doctor == null) {
+            return "redirect:/doctor/login";
+        }
+        
+        try {
+            PatientHealthRecord existing = healthRecordService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Health record not found"));
+            
+            // Security check
+            if (existing.getDoctor() != null && !existing.getDoctor().getId().equals(doctor.getId())) {
+                throw new RuntimeException("Unauthorized");
+            }
+            
+            healthRecordService.updateHealthRecord(id, record);
+            redirectAttributes.addFlashAttribute("success", "Health record updated successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/doctor/health-records/" + id + "/edit";
+        }
+        
+        return "redirect:/doctor/health-records";
     }
 
     // Search medicines (AJAX endpoint)

@@ -1,16 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Products - Vendor Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <style>
+<style>
         :root {
             --primary: #2d5a27;
             --sidebar-bg: #1a1a2e;
@@ -30,16 +21,15 @@
         .top-navbar { background: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
         .card { border: none; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .card-header { background: white; border-bottom: 1px solid #eee; padding: 20px; font-weight: 600; border-radius: 15px 15px 0 0 !important; }
-        .product-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
         .badge-stock { padding: 5px 10px; border-radius: 15px; font-size: 0.75rem; }
         .badge-low { background: #fff3cd; color: #856404; }
         .badge-out { background: #f8d7da; color: #721c24; }
         .badge-ok { background: #d4edda; color: #155724; }
         .btn-action { padding: 5px 10px; font-size: 0.85rem; }
         .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
-    </style>
-</head>
-<body>
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-brand">
@@ -118,21 +108,6 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-<<<<<<< HEAD
-                                            <c:choose>
-                                                <c:when test="${not empty product.imageUrl}">
-                                                    <img src="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" 
-                                                         alt="${product.productName}" class="product-img me-3">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/images/no-image.png" 
-                                                         alt="${product.productName}" class="product-img me-3">
-                                                </c:otherwise>
-                                            </c:choose>
-=======
-                                            <img src="${not empty product.imageUrl ? product.imageUrl : pageContext.request.contextPath.concat('/images/no-image.png')}" 
-                                                 alt="${product.productName}" class="product-img me-3">
->>>>>>> edaa4568e405c23538b45d4e9bbc206b39763f74
                                             <div>
                                                 <strong>${product.productName}</strong>
                                                 <c:if test="${product.isFeatured}">
@@ -247,14 +222,12 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function confirmDelete(productId, productName) {
-            document.getElementById('deleteProductName').textContent = productName;
-            document.getElementById('deleteForm').action = '${pageContext.request.contextPath}/vendor/products/delete/' + productId;
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        }
-    </script>
-</body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmDelete(productId, productName) {
+        document.getElementById('deleteProductName').textContent = productName;
+        document.getElementById('deleteForm').action = '${pageContext.request.contextPath}/vendor/products/delete/' + productId;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+</script>
 

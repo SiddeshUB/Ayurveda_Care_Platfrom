@@ -231,21 +231,57 @@ public class VendorProductService {
     // ==================== Image Management ====================
 
     public String uploadProductImage(MultipartFile file, Long productId) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IOException("File is empty or null");
+        }
+        
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        // Sanitize filename - remove special characters and spaces
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.trim().isEmpty()) {
+            originalFilename = "image";
+        }
+        
+        // Get file extension
+        String extension = "";
+        int lastDot = originalFilename.lastIndexOf('.');
+        if (lastDot > 0 && lastDot < originalFilename.length() - 1) {
+            extension = originalFilename.substring(lastDot);
+        }
+        
+        // Generate unique filename with sanitized original name
+        String sanitizedBaseName = originalFilename.substring(0, lastDot > 0 ? lastDot : originalFilename.length())
+                .replaceAll("[^a-zA-Z0-9._-]", "_")
+                .replaceAll("\\s+", "_");
+        
+        String fileName = UUID.randomUUID().toString() + "_" + sanitizedBaseName + extension;
         
         // Get upload path - use same logic as FileStorageService for Tomcat compatibility
         Path rootUploadPath = getUploadRootPath();
         Path uploadPath = rootUploadPath.resolve("products");
 
+        // Ensure directory exists
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
+        // Save file
         Path filePath = uploadPath.resolve(fileName);
-        Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        try {
+            Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            
+            // Verify file was saved
+            if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                throw new IOException("Failed to save file: " + filePath);
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving product image: " + e.getMessage());
+            System.err.println("Upload path: " + uploadPath);
+            System.err.println("File path: " + filePath);
+            throw new IOException("Failed to save product image: " + e.getMessage(), e);
+        }
 
         String imageUrl = "/uploads/products/" + fileName;
 

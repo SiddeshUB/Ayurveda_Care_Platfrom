@@ -17,6 +17,8 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, Lo
 
     // Find reviews by product
     List<ProductReview> findByProductIdAndStatusOrderByCreatedAtDesc(Long productId, ReviewStatus status);
+    
+    List<ProductReview> findByProductIdOrderByCreatedAtDesc(Long productId);
 
     Page<ProductReview> findByProductIdAndStatus(Long productId, ReviewStatus status, Pageable pageable);
 
@@ -51,5 +53,7 @@ public interface ProductReviewRepository extends JpaRepository<ProductReview, Lo
 
     // Verified purchase reviews
     List<ProductReview> findByProductIdAndStatusAndIsVerifiedPurchaseTrueOrderByCreatedAtDesc(Long productId, ReviewStatus status);
+    
+    List<ProductReview> findAllByOrderByCreatedAtDesc();
 }
 

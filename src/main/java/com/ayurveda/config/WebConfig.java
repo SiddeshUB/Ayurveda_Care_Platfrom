@@ -88,31 +88,6 @@ public class WebConfig implements WebMvcConfigurer {
                     .addResourceLocations("classpath:/static/js/", "/js/");
         }
         
-<<<<<<< HEAD
-        // Serve static images - use ServletContext path (works in Tomcat)
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations(
-                    staticImagesPath != null ? staticImagesPath : "",
-                    "classpath:/WEB-INF/views/images/",
-                    "classpath:/static/images/",
-                    "/WEB-INF/views/images/",
-                    "/images/"
-                )
-                .setCachePeriod(3600);
-=======
-        registry.addResourceHandler("/js/**")
-                .addResourceLocations("/js/");
-        
-        // Serve images from public /images/ folder (works in both embedded and external Tomcat)
-        // Images are copied to /images/ during build for WAR deployment compatibility
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("/images/", "classpath:/META-INF/resources/images/")
-                .resourceChain(true); // Enable resource chain for better performance
-        
-        // Serve uploaded files - use absolute path
-        Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
-        String uploadAbsolutePath = uploadPath.toUri().toString();
->>>>>>> edaa4568e405c23538b45d4e9bbc206b39763f74
         
         // Serve uploaded files - use external directory for Tomcat
         registry.addResourceHandler("/uploads/**")

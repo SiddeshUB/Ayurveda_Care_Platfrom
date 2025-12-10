@@ -82,10 +82,12 @@
         
         .quantity-selector { display: flex; align-items: center; margin-bottom: 25px; }
         .quantity-selector label { margin-right: 15px; font-weight: 500; }
-        .quantity-input { display: flex; align-items: center; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; }
-        .quantity-input button { width: 40px; height: 40px; border: none; background: white; cursor: pointer; font-size: 1.2rem; }
-        .quantity-input button:hover { background: var(--cream); }
-        .quantity-input input { width: 60px; height: 40px; border: none; text-align: center; font-weight: 600; }
+        .quantity-input { display: flex; align-items: center; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; background: white; }
+        .quantity-input button { width: 40px; height: 40px; border: none; background: white; cursor: pointer; font-size: 1.2rem; font-weight: 600; color: var(--primary); transition: all 0.3s ease; }
+        .quantity-input button:hover { background: var(--cream); color: var(--primary-dark); }
+        .quantity-input button:active { transform: scale(0.95); }
+        .quantity-input input { width: 60px; height: 40px; border: none; text-align: center; font-weight: 600; font-size: 1rem; }
+        .quantity-input input:focus { outline: none; }
         
         .action-buttons { display: flex; gap: 15px; margin-bottom: 25px; }
         .btn-add-cart { background: var(--primary); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-weight: 600; flex: 1; }
@@ -203,29 +205,14 @@
         </div>
     </nav>
 
-    <!-- Breadcrumb -->
-    <div class="container" style="margin-top: 100px;">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/">Home</a></li>
-                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/products">Products</a></li>
-                <c:if test="${product.category != null}">
-                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/products/category/${product.category.slug}">${product.category.displayName}</a></li>
-                </c:if>
-                <li class="breadcrumb-item active">${product.productName}</li>
-            </ol>
-        </nav>
-    </div>
-
     <!-- Product Details -->
-    <section class="py-4">
+    <section class="py-4" style="margin-top: 100px;">
         <div class="container">
             <div class="row">
                 <!-- Product Gallery -->
                 <div class="col-lg-5 mb-4">
                     <div class="product-gallery">
                         <div class="main-image">
-<<<<<<< HEAD
                             <c:choose>
                                 <c:when test="${not empty product.imageUrl}">
                                     <c:set var="mainImageUrl" value="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" />
@@ -235,9 +222,6 @@
                                     <img src="${pageContext.request.contextPath}/images/no-product.png" alt="${product.productName}" id="mainImage">
                                 </c:otherwise>
                             </c:choose>
-=======
-                            <img src="${not empty product.imageUrl ? product.imageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${product.productName}" id="mainImage">
->>>>>>> edaa4568e405c23538b45d4e9bbc206b39763f74
                         </div>
                         <c:if test="${not empty productImages}">
                             <div class="thumbnail-images">
@@ -359,34 +343,55 @@
             <!-- Product Tabs -->
             <div class="product-tabs">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description">Description</button>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Description</button>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ingredients">Ingredients</button>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab" aria-controls="ingredients" aria-selected="false">Ingredients</button>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#usage">How to Use</button>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="usage-tab" data-bs-toggle="tab" data-bs-target="#usage" type="button" role="tab" aria-controls="usage" aria-selected="false">How to Use</button>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews">Reviews (${product.totalReviews})</button>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Reviews (${product.totalReviews})</button>
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane fade show active" id="description">
-                        <p>${not empty product.description ? product.description : 'No description available.'}</p>
+                    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                        <c:choose>
+                            <c:when test="${not empty product.description}">
+                                <div style="white-space: pre-wrap; line-height: 1.8;">${product.description}</div>
+                            </c:when>
+                            <c:otherwise>
+                                <p class="text-muted">No description available.</p>
+                            </c:otherwise>
+                        </c:choose>
                         <c:if test="${not empty product.benefits}">
-                            <h5 class="mt-4 mb-3">Benefits</h5>
-                            <p>${product.benefits}</p>
+                            <h5 class="mt-4 mb-3" style="color: var(--primary);">Benefits</h5>
+                            <div style="white-space: pre-wrap; line-height: 1.8;">${product.benefits}</div>
                         </c:if>
                     </div>
-                    <div class="tab-pane fade" id="ingredients">
-                        <p>${not empty product.ingredients ? product.ingredients : 'Ingredient information not available.'}</p>
+                    <div class="tab-pane fade" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
+                        <c:choose>
+                            <c:when test="${not empty product.ingredients}">
+                                <div style="white-space: pre-wrap; line-height: 1.8;">${product.ingredients}</div>
+                            </c:when>
+                            <c:otherwise>
+                                <p class="text-muted">Ingredient information not available.</p>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    <div class="tab-pane fade" id="usage">
-                        <p>${not empty product.usageInstructions ? product.usageInstructions : 'Usage instructions not available.'}</p>
+                    <div class="tab-pane fade" id="usage" role="tabpanel" aria-labelledby="usage-tab">
+                        <c:choose>
+                            <c:when test="${not empty product.usageInstructions}">
+                                <div style="white-space: pre-wrap; line-height: 1.8;">${product.usageInstructions}</div>
+                            </c:when>
+                            <c:otherwise>
+                                <p class="text-muted">Usage instructions not available.</p>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    <div class="tab-pane fade" id="reviews">
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                         <!-- Rating Summary -->
                         <div class="row mb-4">
                             <div class="col-md-4 text-center">
@@ -465,7 +470,6 @@
                             <div class="col-md-3">
                                 <a href="${pageContext.request.contextPath}/products/${sp.slug}" class="text-decoration-none">
                                     <div class="similar-product-card">
-<<<<<<< HEAD
                                         <c:choose>
                                             <c:when test="${not empty sp.imageUrl}">
                                                 <img src="${sp.imageUrl.startsWith('http') ? sp.imageUrl : pageContext.request.contextPath.concat(sp.imageUrl)}" alt="${sp.productName}">
@@ -474,9 +478,6 @@
                                                 <img src="${pageContext.request.contextPath}/images/no-product.png" alt="${sp.productName}">
                                             </c:otherwise>
                                         </c:choose>
-=======
-                                        <img src="${not empty sp.imageUrl ? sp.imageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${sp.productName}">
->>>>>>> edaa4568e405c23538b45d4e9bbc206b39763f74
                                         <div class="card-body">
                                             <p class="title text-dark">${sp.productName}</p>
                                             <span class="price">₹<fmt:formatNumber value="${sp.price}"/></span>
@@ -508,26 +509,64 @@
         
         function decreaseQty() {
             var input = document.getElementById('quantity');
-            if (input.value > 1) input.value = parseInt(input.value) - 1;
+            var currentValue = parseInt(input.value) || 1;
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
         }
         
         function increaseQty(max) {
             var input = document.getElementById('quantity');
-            if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+            var currentValue = parseInt(input.value) || 1;
+            var maxValue = parseInt(max) || 999;
+            if (currentValue < maxValue) {
+                input.value = currentValue + 1;
+            }
         }
         
         function addToCart(productId) {
-            var qty = document.getElementById('quantity').value;
-            window.location.href = '${pageContext.request.contextPath}/user/dashboard/cart/add/' + productId + '?quantity=' + qty;
+            <c:choose>
+                <c:when test="${not empty currentUser}">
+                    var qty = document.getElementById('quantity').value;
+                    if (!qty || qty < 1) qty = 1;
+                    window.location.href = '${pageContext.request.contextPath}/user/dashboard/cart/add/' + productId + '?quantity=' + qty;
+                </c:when>
+                <c:otherwise>
+                    if (confirm('Please login to add items to cart. Redirect to login page?')) {
+                        window.location.href = '${pageContext.request.contextPath}/user/login?redirect=' + encodeURIComponent(window.location.pathname);
+                    }
+                </c:otherwise>
+            </c:choose>
         }
         
         function buyNow(productId) {
-            var qty = document.getElementById('quantity').value;
-            window.location.href = '${pageContext.request.contextPath}/user/dashboard/checkout?productId=' + productId + '&quantity=' + qty;
+            <c:choose>
+                <c:when test="${not empty currentUser}">
+                    var qty = document.getElementById('quantity').value;
+                    if (!qty || qty < 1) qty = 1;
+                    // Add to cart first, then redirect to checkout
+                    var addToCartUrl = '${pageContext.request.contextPath}/user/dashboard/cart/add/' + productId + '?quantity=' + qty + '&redirect=checkout';
+                    window.location.href = addToCartUrl;
+                </c:when>
+                <c:otherwise>
+                    if (confirm('Please login to buy now. Redirect to login page?')) {
+                        window.location.href = '${pageContext.request.contextPath}/user/login?redirect=' + encodeURIComponent(window.location.pathname);
+                    }
+                </c:otherwise>
+            </c:choose>
         }
         
         function toggleWishlist(productId) {
-            window.location.href = '${pageContext.request.contextPath}/user/dashboard/wishlist/toggle/' + productId;
+            <c:choose>
+                <c:when test="${not empty currentUser}">
+                    window.location.href = '${pageContext.request.contextPath}/user/dashboard/wishlist/toggle/' + productId;
+                </c:when>
+                <c:otherwise>
+                    if (confirm('Please login to add to wishlist. Redirect to login page?')) {
+                        window.location.href = '${pageContext.request.contextPath}/user/login?redirect=' + encodeURIComponent(window.location.pathname);
+                    }
+                </c:otherwise>
+            </c:choose>
         }
     </script>
 </body>

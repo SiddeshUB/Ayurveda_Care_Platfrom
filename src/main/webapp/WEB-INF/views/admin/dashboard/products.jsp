@@ -2,28 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Products - Admin Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
-    <style>
-        :root {
-            --admin-primary: #1a1a3e;
-            --admin-secondary: #2d2d5e;
-            --admin-accent: #C7A369;
-        }
-        .sidebar { background: linear-gradient(180deg, var(--admin-primary) 0%, #0f0f23 100%); }
-        .sidebar-logo .highlight { color: var(--admin-accent); }
-        .nav-item.active { border-left-color: var(--admin-accent); }
-        .nav-badge { background: #ef4444; }
+<c:set var="pageTitle" value="All Products" scope="request"/>
+<c:set var="activePage" value="products" scope="request"/>
+<%@ include file="/WEB-INF/views/admin/layouts/admin-header.jsp" %>
+<style>
         .page-title-section { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
         .search-box { position: relative; width: 300px; }
         .search-box input { width: 100%; padding: 12px 20px 12px 45px; border: 2px solid #e5e7eb; border-radius: 10px; }
@@ -45,66 +27,7 @@
         .btn-action { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; }
         .btn-action.view { background: #dbeafe; color: #1e40af; }
         .btn-action.view:hover { background: #1e40af; color: white; }
-    </style>
-</head>
-<body class="dashboard-body">
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="${pageContext.request.contextPath}/" class="sidebar-logo">
-                <i class="fas fa-shield-alt"></i>
-                <span>Admin<span class="highlight">Panel</span></span>
-            </a>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-item">
-                <i class="fas fa-th-large"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/hospitals" class="nav-item">
-                <i class="fas fa-hospital"></i>
-                <span>All Hospitals</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/users" class="nav-item">
-                <i class="fas fa-users"></i>
-                <span>All Users</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/doctors" class="nav-item">
-                <i class="fas fa-user-md"></i>
-                <span>All Doctors</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/bookings" class="nav-item">
-                <i class="fas fa-calendar-check"></i>
-                <span>All Bookings</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/products" class="nav-item active">
-                <i class="fas fa-shopping-bag"></i>
-                <span>All Products</span>
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="${pageContext.request.contextPath}/admin/logout" class="logout-link">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </aside>
-
-    <main class="dashboard-main">
-        <header class="dashboard-header">
-            <div class="header-left">
-                <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-                <h1>All Products</h1>
-            </div>
-            <div class="header-right">
-                <div class="header-profile">
-                    <div class="profile-info">
-                        <span class="profile-name">${admin.fullName}</span>
-                    </div>
-                    <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
-                </div>
-            </div>
-        </header>
-
-        <div class="dashboard-content">
+</style>
             <c:if test="${not empty success}">
                 <div class="alert alert-success"><i class="fas fa-check-circle"></i> ${success}</div>
             </c:if>
@@ -113,7 +36,7 @@
             </c:if>
 
             <div class="page-title-section">
-                <h1><i class="fas fa-shopping-bag"></i> All Products (${stats.totalProducts})</h1>
+                <h1><i class="fas fa-shopping-bag"></i> All Products <c:if test="${not empty stats and not empty stats.totalProducts}">(${stats.totalProducts})</c:if></h1>
                 <div class="search-box">
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterTable()">
@@ -129,7 +52,7 @@
                                     <th>Product</th>
                                     <th>SKU</th>
                                     <th>Category</th>
-                                    <th>Hospital</th>
+                                    <th>Vendor</th>
                                     <th>Price</th>
                                     <th>Stock</th>
                                     <th>Status</th>
@@ -170,8 +93,8 @@
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${not empty product.hospital}">
-                                                    <span style="font-size: 0.9rem;">${product.hospital.centerName}</span>
+                                                <c:when test="${not empty product.vendor}">
+                                                    <span style="font-size: 0.9rem;">${product.vendor.storeDisplayName}</span>
                                                 </c:when>
                                                 <c:otherwise>-</c:otherwise>
                                             </c:choose>
@@ -228,13 +151,6 @@
     </main>
 
     <script>
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-            });
-        }
         function filterTable() {
             const input = document.getElementById('searchInput');
             const filter = input.value.toLowerCase();
@@ -255,6 +171,5 @@
             }
         }
     </script>
-</body>
-</html>
+<%@ include file="/WEB-INF/views/admin/layouts/admin-footer.jsp" %>
 

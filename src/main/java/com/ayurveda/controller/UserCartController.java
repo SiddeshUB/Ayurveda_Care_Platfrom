@@ -59,6 +59,7 @@ public class UserCartController {
     @RequestMapping(value = "/cart/add/{productId}", method = RequestMethod.GET)
     public String addToCart(@PathVariable Long productId,
                            @RequestParam(defaultValue = "1") int quantity,
+                           @RequestParam(required = false) String redirect,
                            HttpSession session,
                            RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
@@ -72,12 +73,17 @@ public class UserCartController {
             
             cartService.addToCart(user, productId, quantity);
             
-            redirectAttributes.addFlashAttribute("success", "Product added to cart!");
+            if ("checkout".equals(redirect)) {
+                redirectAttributes.addFlashAttribute("success", "Product added to cart! Proceeding to checkout...");
+                return "redirect:/user/dashboard/checkout";
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Product added to cart!");
+                return "redirect:/user/dashboard/cart";
+            }
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/user/dashboard/cart";
         }
-
-        return "redirect:/user/dashboard/cart";
     }
 
     @PostMapping("/cart/update/{productId}")
