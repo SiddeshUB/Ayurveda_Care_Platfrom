@@ -191,7 +191,7 @@ public class PaymentController {
     /**
      * Payment success page - redirects to dashboard with success message
      */
-    @GetMapping("/success/{orderId}")
+    @RequestMapping(value = "/success/{orderId}", method = RequestMethod.GET)
     public String paymentSuccess(@PathVariable Long orderId, HttpSession session, RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -212,7 +212,7 @@ public class PaymentController {
     /**
      * Payment failure page
      */
-    @GetMapping("/failed/{orderId}")
+    @RequestMapping(value = "/failed/{orderId}", method = RequestMethod.GET)
     public String paymentFailed(@PathVariable Long orderId, HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -348,7 +348,7 @@ public class PaymentController {
     /**
      * Booking payment success redirect
      */
-    @GetMapping("/booking/success")
+    @RequestMapping(value = "/booking/success", method = RequestMethod.GET)
     public String bookingPaymentSuccess(HttpSession session, RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {

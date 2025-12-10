@@ -25,10 +25,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/js/**")
                 .addResourceLocations("/js/");
         
-        // Serve images - try WEB-INF/views/images/ first, then /images/
-        // Note: Spring Boot serves from webapp root, so /WEB-INF/views/images/ should work
+        // Serve images from public /images/ folder (works in both embedded and external Tomcat)
+        // Images are copied to /images/ during build for WAR deployment compatibility
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("/WEB-INF/views/images/", "/images/");
+                .addResourceLocations("/images/", "classpath:/META-INF/resources/images/")
+                .resourceChain(true); // Enable resource chain for better performance
         
         // Serve uploaded files - use absolute path
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath();

@@ -39,7 +39,7 @@ public class UserCartController {
 
     // ==================== Cart ====================
 
-    @GetMapping("/cart")
+    @RequestMapping(value = "/cart", method = RequestMethod.GET)
     public String viewCart(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -56,7 +56,7 @@ public class UserCartController {
         return "user/dashboard/cart";
     }
 
-    @GetMapping("/cart/add/{productId}")
+    @RequestMapping(value = "/cart/add/{productId}", method = RequestMethod.GET)
     public String addToCart(@PathVariable Long productId,
                            @RequestParam(defaultValue = "1") int quantity,
                            HttpSession session,
@@ -100,7 +100,7 @@ public class UserCartController {
         return "redirect:/user/dashboard/cart";
     }
 
-    @GetMapping("/cart/remove/{productId}")
+    @RequestMapping(value = "/cart/remove/{productId}", method = RequestMethod.GET)
     public String removeFromCart(@PathVariable Long productId,
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
@@ -119,7 +119,7 @@ public class UserCartController {
         return "redirect:/user/dashboard/cart";
     }
 
-    @GetMapping("/cart/clear")
+    @RequestMapping(value = "/cart/clear", method = RequestMethod.GET)
     public String clearCart(HttpSession session, RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -138,7 +138,7 @@ public class UserCartController {
 
     // ==================== Wishlist ====================
 
-    @GetMapping("/wishlist")
+    @RequestMapping(value = "/wishlist", method = RequestMethod.GET)
     public String viewWishlist(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -152,7 +152,7 @@ public class UserCartController {
         return "user/dashboard/wishlist";
     }
 
-    @GetMapping("/wishlist/toggle/{productId}")
+    @RequestMapping(value = "/wishlist/toggle/{productId}", method = RequestMethod.GET)
     public String toggleWishlist(@PathVariable Long productId,
                                 @RequestParam(required = false) String redirect,
                                 HttpSession session,
@@ -182,7 +182,7 @@ public class UserCartController {
         return "redirect:/user/dashboard/wishlist";
     }
 
-    @GetMapping("/wishlist/move-to-cart/{productId}")
+    @RequestMapping(value = "/wishlist/move-to-cart/{productId}", method = RequestMethod.GET)
     public String moveToCart(@PathVariable Long productId,
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
@@ -208,7 +208,7 @@ public class UserCartController {
 
     // ==================== Checkout ====================
 
-    @GetMapping("/checkout")
+    @RequestMapping(value = "/checkout", method = RequestMethod.GET)
     public String checkout(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -356,7 +356,7 @@ public class UserCartController {
 
     // ==================== Orders ====================
 
-    @GetMapping("/orders")
+    @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public String myOrders(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -370,7 +370,7 @@ public class UserCartController {
         return "user/dashboard/orders";
     }
 
-    @GetMapping("/orders/{id}")
+    @RequestMapping(value = "/orders/{id}", method = RequestMethod.GET)
     public String orderDetails(@PathVariable Long id, HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {

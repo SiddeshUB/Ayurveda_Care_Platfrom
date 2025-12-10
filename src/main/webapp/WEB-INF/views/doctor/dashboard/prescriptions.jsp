@@ -7,21 +7,487 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prescriptions - Doctor Dashboard</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --ayur-dark-green: #0a3d2c;
+            --ayur-medium-green: #1a5c40;
+            --ayur-light-green: #2e7d5a;
+            --ayur-accent-gold: #d4af37;
+            --ayur-teal: #2a9d8f;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --border-radius: 16px;
+            --card-shadow: 0 10px 40px rgba(10, 61, 44, 0.1);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background: linear-gradient(135deg, #f0f7f4 0%, #e8f1ed 100%);
+            color: #2c3e50;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-body { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--ayur-dark-green) 0%, var(--ayur-medium-green) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            transition: var(--transition);
+            box-shadow: 5px 0 25px rgba(10, 61, 44, 0.2);
+            border-right: 3px solid var(--ayur-accent-gold);
+        }
+        
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: center;
+            background: rgba(10, 61, 44, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--ayur-accent-gold), transparent);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            justify-content: center;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .sidebar-logo i {
+            font-size: 2.2rem;
+            color: var(--ayur-accent-gold);
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .sidebar-logo .highlight {
+            color: var(--ayur-accent-gold);
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 25px 0;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 30px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            margin: 8px 15px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .nav-item:hover::before { left: 100%; }
+        
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(46, 125, 90, 0.2));
+            color: white;
+            padding-left: 35px;
+            transform: translateX(5px);
+            border-left-color: var(--ayur-accent-gold);
+        }
+        
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(46, 125, 90, 0.3), rgba(212, 175, 55, 0.2));
+            border-left-color: var(--ayur-accent-gold);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+            text-align: center;
+            color: var(--ayur-accent-gold);
+        }
+        
+        .nav-item span {
+            flex: 1;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+        
+        .sidebar-footer {
+            padding: 25px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(10, 61, 44, 0.8);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--ayur-accent-gold);
+            color: var(--ayur-accent-gold);
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline:hover {
+            background: var(--ayur-accent-gold);
+            color: var(--ayur-dark-green);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .logout-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .logout-link:hover {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            transform: translateX(5px);
+        }
+        
+        .dashboard-main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+            background: linear-gradient(135deg, #f5f9f7 0%, #edf5f1 100%);
+            min-height: 100vh;
+        }
+        
+        .dashboard-header {
+            background: white;
+            height: var(--header-height);
+            padding: 0 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 6px 20px rgba(10, 61, 44, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 2px solid var(--ayur-accent-gold);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .sidebar-toggle {
+            background: var(--ayur-light-green);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            color: white;
+            cursor: pointer;
+            display: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(46, 125, 90, 0.2);
+        }
+        
+        .sidebar-toggle:hover {
+            background: var(--ayur-teal);
+            transform: rotate(90deg);
+        }
+        
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--ayur-dark-green);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--ayur-dark-green), var(--ayur-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-content {
+            padding: 35px;
+            max-width: 1500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, rgba(106, 153, 78, 0.1), rgba(56, 102, 65, 0.1));
+            color: var(--ayur-olive);
+            border-left: 4px solid var(--ayur-olive);
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(236, 112, 99, 0.1));
+            color: #e74c3c;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        /* Table Styles */
+        .hospitals-table {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 2px solid rgba(46, 125, 90, 0.1);
+        }
+        
+        .hospitals-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .hospitals-table thead {
+            background: linear-gradient(135deg, var(--ayur-dark-green), var(--ayur-medium-green));
+            color: white;
+        }
+        
+        .hospitals-table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .hospitals-table tbody tr {
+            border-bottom: 1px solid rgba(46, 125, 90, 0.1);
+            transition: var(--transition);
+        }
+        
+        .hospitals-table tbody tr:hover {
+            background: linear-gradient(to right, rgba(240, 247, 244, 0.5), white);
+        }
+        
+        .hospitals-table tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        .hospitals-table td {
+            padding: 18px 20px;
+            color: var(--ayur-dark-green);
+            font-size: 0.95rem;
+        }
+        
+        .hospitals-table td strong {
+            color: var(--ayur-dark-green);
+            font-weight: 700;
+        }
+        
+        .hospitals-table td small {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        /* Button Actions */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-action.view {
+            background: linear-gradient(135deg, var(--ayur-light-green), var(--ayur-teal));
+            color: white;
+        }
+        
+        .btn-action.view:hover {
+            background: linear-gradient(135deg, var(--ayur-teal), var(--ayur-accent-gold));
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(46, 125, 90, 0.3);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            border: 2px solid rgba(46, 125, 90, 0.1);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--ayur-accent-gold);
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--ayur-dark-green);
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        /* Text Muted */
+        :root {
+            --text-muted: #6b7280;
+            --radius-lg: 16px;
+            --spacing-3xl: 60px;
+            --ayur-olive: #6a994e;
+        }
+        
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 10px 0 40px rgba(10, 61, 44, 0.3);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .dashboard-main {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 25px;
+            }
+            
+            .header-left h1 {
+                font-size: 1.6rem;
+            }
+            
+            .hospitals-table {
+                overflow-x: auto;
+            }
+            
+            .hospitals-table table {
+                min-width: 800px;
+            }
+            
+            .hospitals-table th,
+            .hospitals-table td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .empty-state {
+                padding: 40px 25px;
+            }
+            
+            .empty-state i {
+                font-size: 3rem;
+            }
+            
+            .empty-state h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="${pageContext.request.contextPath}/" class="sidebar-logo">
-                <i class="fas fa-user-md"></i>
-                <span>Doctor<span class="highlight">Portal</span></span>
+                <i class="fas fa-leaf"></i>
+                <span>Ayur<span class="highlight">Doctor</span></span>
             </a>
         </div>
+        
         <nav class="sidebar-nav">
             <a href="${pageContext.request.contextPath}/doctor/dashboard" class="nav-item">
-                <i class="fas fa-th-large"></i>
+                <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/doctor/profile" class="nav-item">
+                <i class="fas fa-user-circle"></i>
+                <span>Profile</span>
             </a>
             <a href="${pageContext.request.contextPath}/doctor/appointments" class="nav-item">
                 <i class="fas fa-calendar-check"></i>
@@ -31,16 +497,44 @@
                 <i class="fas fa-prescription"></i>
                 <span>Prescriptions</span>
             </a>
-            <a href="${pageContext.request.contextPath}/doctor/treatments" class="nav-item">
-                <i class="fas fa-spa"></i>
-                <span>Treatments</span>
+            <a href="${pageContext.request.contextPath}/doctor/health-records" class="nav-item">
+                <i class="fas fa-file-medical"></i>
+                <span>Health Records</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/doctor/reviews" class="nav-item">
+                <i class="fas fa-star"></i>
+                <span>Reviews</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/doctor/availability" class="nav-item">
+                <i class="fas fa-clock"></i>
+                <span>Availability</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/doctor/packages" class="nav-item">
+                <i class="fas fa-box"></i>
+                <span>My Packages</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/doctor/bookings" class="nav-item">
+                <i class="fas fa-book-medical"></i>
+                <span>Package Bookings</span>
             </a>
         </nav>
+        
+        <div class="sidebar-footer">
+            <a href="${pageContext.request.contextPath}/" class="btn btn-outline btn-sm" target="_blank">
+                <i class="fas fa-external-link-alt"></i> View AyurVedaCare
+            </a>
+            <a href="${pageContext.request.contextPath}/doctor/logout" class="logout-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
     </aside>
 
     <main class="dashboard-main">
         <header class="dashboard-header">
             <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <h1>Prescriptions</h1>
             </div>
         </header>
@@ -121,6 +615,18 @@
             </c:choose>
         </div>
     </main>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                this.style.transform = sidebar.classList.contains('active') ? 'rotate(90deg)' : 'rotate(0)';
+            });
+        }
+    </script>
 </body>
 </html>
 

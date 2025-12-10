@@ -33,7 +33,7 @@ public class HospitalRegistrationController {
         this.photoService = photoService;
     }
 
-    @GetMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(@RequestParam(value = "error", required = false) String error,
                             @RequestParam(value = "logout", required = false) String logout,
                             Model model) {
@@ -46,7 +46,7 @@ public class HospitalRegistrationController {
         return "hospital/login";
     }
 
-    @GetMapping("/register")
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String registerPage(Model model, HttpSession session) {
         // Initialize registration data in session if not present
         if (session.getAttribute("registrationData") == null) {
@@ -289,7 +289,7 @@ public class HospitalRegistrationController {
     }
 
     // Go back to previous step
-    @GetMapping("/register/back")
+    @RequestMapping(value = "/register/back", method = RequestMethod.GET)
     public String goBack(HttpSession session) {
         Integer currentStep = (Integer) session.getAttribute("currentStep");
         if (currentStep != null && currentStep > 1) {

@@ -56,7 +56,7 @@ public class DoctorController {
     }
 
     // Login Page
-    @GetMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(@RequestParam(required = false) String error,
                            @RequestParam(required = false) String logout,
                            Model model) {
@@ -74,7 +74,7 @@ public class DoctorController {
     }
 
     // Register Page - DISABLED: Doctors must be registered through hospital dashboard
-    @GetMapping("/register")
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String registerPage(Model model) {
         model.addAttribute("error", "Doctor registration is only available through hospital dashboards. Please contact your hospital administrator to register.");
         return "doctor/login";
@@ -90,7 +90,7 @@ public class DoctorController {
     }
 
     // Dashboard
-    @GetMapping("/dashboard")
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public String dashboard(Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor != null) {
@@ -134,7 +134,7 @@ public class DoctorController {
     }
 
     // ========== APPOINTMENTS MANAGEMENT ==========
-    @GetMapping("/appointments")
+    @RequestMapping(value = "/appointments", method = RequestMethod.GET)
     public String appointments(@RequestParam(required = false) String status, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -160,7 +160,7 @@ public class DoctorController {
         return "doctor/dashboard/appointments";
     }
 
-    @GetMapping("/appointments/{id}")
+    @RequestMapping(value = "/appointments/{id}", method = RequestMethod.GET)
     public String appointmentDetails(@PathVariable Long id, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -315,7 +315,7 @@ public class DoctorController {
     }
 
     // ========== AVAILABILITY MANAGEMENT ==========
-    @GetMapping("/availability")
+    @RequestMapping(value = "/availability", method = RequestMethod.GET)
     public String availability(Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -390,7 +390,7 @@ public class DoctorController {
     }
 
     // ========== PROFILE MANAGEMENT ==========
-    @GetMapping("/profile")
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String profile(Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -427,7 +427,7 @@ public class DoctorController {
     }
 
     // ========== PRESCRIPTION MANAGEMENT ==========
-    @GetMapping("/prescriptions")
+    @RequestMapping(value = "/prescriptions", method = RequestMethod.GET)
     public String prescriptions(Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -441,7 +441,7 @@ public class DoctorController {
         return "doctor/dashboard/prescriptions";
     }
 
-    @GetMapping("/prescriptions/create/{consultationId}")
+    @RequestMapping(value = "/prescriptions/create/{consultationId}", method = RequestMethod.GET)
     public String createPrescriptionForm(@PathVariable Long consultationId, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -536,7 +536,7 @@ public class DoctorController {
         return "redirect:/doctor/prescriptions";
     }
 
-    @GetMapping("/prescriptions/{id}")
+    @RequestMapping(value = "/prescriptions/{id}", method = RequestMethod.GET)
     public String viewPrescription(@PathVariable Long id, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -557,7 +557,7 @@ public class DoctorController {
     }
 
     // ========== TREATMENT RECOMMENDATIONS ==========
-    @GetMapping("/treatments")
+    @RequestMapping(value = "/treatments", method = RequestMethod.GET)
     public String treatments(Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -571,7 +571,7 @@ public class DoctorController {
         return "doctor/dashboard/treatments";
     }
 
-    @GetMapping("/treatments/create/{consultationId}")
+    @RequestMapping(value = "/treatments/create/{consultationId}", method = RequestMethod.GET)
     public String createTreatmentForm(@PathVariable Long consultationId, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -614,7 +614,7 @@ public class DoctorController {
         return "redirect:/doctor/treatments";
     }
 
-    @GetMapping("/treatments/{id}")
+    @RequestMapping(value = "/treatments/{id}", method = RequestMethod.GET)
     public String viewTreatment(@PathVariable Long id, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -635,14 +635,14 @@ public class DoctorController {
     }
 
     // Search medicines (AJAX endpoint)
-    @GetMapping("/medicines/search")
+    @RequestMapping(value = "/medicines/search", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<Medicine>> searchMedicines(@RequestParam(required = false) String query) {
         return ResponseEntity.ok(prescriptionService.searchMedicines(query));
     }
 
     // Search Hospitals
-    @GetMapping("/hospitals/search")
+    @RequestMapping(value = "/hospitals/search", method = RequestMethod.GET)
     public String searchHospitals(@RequestParam(required = false) String query, Model model) {
         Doctor doctor = getCurrentDoctor();
         List<Hospital> hospitals;
@@ -669,7 +669,7 @@ public class DoctorController {
     }
 
     // Request Hospital Association
-    @GetMapping("/hospitals/{hospitalId}/request")
+    @RequestMapping(value = "/hospitals/{hospitalId}/request", method = RequestMethod.GET)
     public String requestAssociationForm(@PathVariable Long hospitalId, Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {
@@ -709,7 +709,7 @@ public class DoctorController {
     }
 
     // View Hospital Associations
-    @GetMapping("/hospitals/associations")
+    @RequestMapping(value = "/hospitals/associations", method = RequestMethod.GET)
     public String viewAssociations(Model model) {
         Doctor doctor = getCurrentDoctor();
         if (doctor == null) {

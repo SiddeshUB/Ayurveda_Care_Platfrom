@@ -70,7 +70,7 @@
                     <div class="review-card">
                         <div class="row">
                             <div class="col-md-2">
-                                <img src="${not empty review.product.imageUrl ? review.product.imageUrl : '/images/no-image.png'}" alt="${review.product.productName}" class="product-thumb mb-2">
+                                <img src="${not empty review.product.imageUrl ? review.product.imageUrl : pageContext.request.contextPath.concat('/images/no-image.png')}" alt="${review.product.productName}" class="product-thumb mb-2">
                                 <br><strong>${review.product.productName}</strong>
                             </div>
                             <div class="col-md-10">

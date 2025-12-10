@@ -49,7 +49,7 @@ public class AdminController {
     }
 
     // Login Page
-    @GetMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(@RequestParam(required = false) String error,
                            @RequestParam(required = false) String logout,
                            Model model) {
@@ -63,7 +63,7 @@ public class AdminController {
     }
 
     // Register Page
-    @GetMapping("/register")
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String registerPage(Model model) {
         model.addAttribute("admin", new Admin());
         return "admin/register";
@@ -84,7 +84,7 @@ public class AdminController {
     }
 
     // Dashboard
-    @GetMapping("/dashboard")
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public String dashboard(Model model) {
         Admin admin = getCurrentAdmin();
         if (admin != null) {
@@ -119,7 +119,7 @@ public class AdminController {
     }
 
     // All Hospitals List
-    @GetMapping("/hospitals")
+    @RequestMapping(value = "/hospitals", method = RequestMethod.GET)
     public String allHospitals(@RequestParam(required = false) String status, Model model) {
         Admin admin = getCurrentAdmin();
         List<Hospital> hospitals;
@@ -144,7 +144,7 @@ public class AdminController {
     }
 
     // Hospital Details
-    @GetMapping("/hospitals/{id}")
+    @RequestMapping(value = "/hospitals/{id}", method = RequestMethod.GET)
     public String hospitalDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<Hospital> hospitalOpt = adminService.getHospitalById(id);
@@ -160,7 +160,7 @@ public class AdminController {
     }
 
     // Hospital Complete Details
-    @GetMapping("/hospitals/{id}/complete")
+    @RequestMapping(value = "/hospitals/{id}/complete", method = RequestMethod.GET)
     public String hospitalCompleteDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         
@@ -269,7 +269,7 @@ public class AdminController {
     }
 
     // ========== USERS (VIEW ONLY) ==========
-    @GetMapping("/users")
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String allUsers(Model model) {
         Admin admin = getCurrentAdmin();
         List<User> users = adminService.getAllUsers();
@@ -281,7 +281,7 @@ public class AdminController {
         return "admin/dashboard/users";
     }
 
-    @GetMapping("/users/{id}")
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
     public String userDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<User> userOpt = adminService.getUserById(id);
@@ -297,7 +297,7 @@ public class AdminController {
     }
 
     // ========== DOCTORS (VIEW ONLY) ==========
-    @GetMapping("/doctors")
+    @RequestMapping(value = "/doctors", method = RequestMethod.GET)
     public String allDoctors(Model model) {
         Admin admin = getCurrentAdmin();
         List<Doctor> doctors = adminService.getAllDoctors();
@@ -309,7 +309,7 @@ public class AdminController {
         return "admin/dashboard/doctors";
     }
 
-    @GetMapping("/doctors/{id}")
+    @RequestMapping(value = "/doctors/{id}", method = RequestMethod.GET)
     public String doctorDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<Doctor> doctorOpt = adminService.getDoctorById(id);
@@ -325,7 +325,7 @@ public class AdminController {
     }
 
     // ========== BOOKINGS (VIEW ONLY) ==========
-    @GetMapping("/bookings")
+    @RequestMapping(value = "/bookings", method = RequestMethod.GET)
     public String allBookings(Model model) {
         Admin admin = getCurrentAdmin();
         List<Booking> bookings = adminService.getAllBookings();
@@ -337,7 +337,7 @@ public class AdminController {
         return "admin/dashboard/bookings";
     }
 
-    @GetMapping("/bookings/{id}")
+    @RequestMapping(value = "/bookings/{id}", method = RequestMethod.GET)
     public String bookingDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<Booking> bookingOpt = adminService.getBookingById(id);
@@ -353,7 +353,7 @@ public class AdminController {
     }
 
     // ========== PRODUCTS (VIEW ONLY) ==========
-    @GetMapping("/products")
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
     public String allProducts(Model model) {
         Admin admin = getCurrentAdmin();
         List<Product> products = adminService.getAllProducts();
@@ -365,7 +365,7 @@ public class AdminController {
         return "admin/dashboard/products";
     }
 
-    @GetMapping("/products/{id}")
+    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET)
     public String productDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<Product> productOpt = adminService.getProductById(id);
@@ -381,7 +381,7 @@ public class AdminController {
     }
 
     // ========== ENQUIRIES (VIEW ONLY) ==========
-    @GetMapping("/enquiries")
+    @RequestMapping(value = "/enquiries", method = RequestMethod.GET)
     public String allEnquiries(Model model) {
         Admin admin = getCurrentAdmin();
         List<UserEnquiry> enquiries = adminService.getAllEnquiries();
@@ -393,7 +393,7 @@ public class AdminController {
         return "admin/dashboard/enquiries";
     }
 
-    @GetMapping("/enquiries/{id}")
+    @RequestMapping(value = "/enquiries/{id}", method = RequestMethod.GET)
     public String enquiryDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<UserEnquiry> enquiryOpt = adminService.getEnquiryById(id);
@@ -410,7 +410,7 @@ public class AdminController {
 
     // ========== VENDOR MANAGEMENT ==========
     
-    @GetMapping("/vendors")
+    @RequestMapping(value = "/vendors", method = RequestMethod.GET)
     public String allVendors(@RequestParam(required = false) String status,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
@@ -439,7 +439,7 @@ public class AdminController {
         return "admin/dashboard/vendors";
     }
     
-    @GetMapping("/vendors/{id}")
+    @RequestMapping(value = "/vendors/{id}", method = RequestMethod.GET)
     public String vendorDetails(@PathVariable Long id, Model model) {
         Admin admin = getCurrentAdmin();
         Optional<Vendor> vendorOpt = vendorService.findById(id);
@@ -544,7 +544,7 @@ public class AdminController {
     
     // ========== PRODUCT CATEGORIES ==========
     
-    @GetMapping("/categories")
+    @RequestMapping(value = "/categories", method = RequestMethod.GET)
     public String allCategories(Model model) {
         Admin admin = getCurrentAdmin();
         List<ProductCategory> categories = categoryService.findAll();
@@ -589,7 +589,7 @@ public class AdminController {
     
     // ========== REVIEW MODERATION ==========
     
-    @GetMapping("/reviews")
+    @RequestMapping(value = "/reviews", method = RequestMethod.GET)
     public String allReviews(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "20") int size,
                             Model model) {

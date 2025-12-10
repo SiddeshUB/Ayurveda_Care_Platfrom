@@ -225,7 +225,7 @@
                 <div class="col-lg-5 mb-4">
                     <div class="product-gallery">
                         <div class="main-image">
-                            <img src="${not empty product.imageUrl ? product.imageUrl : '/images/no-product.png'}" alt="${product.productName}" id="mainImage">
+                            <img src="${not empty product.imageUrl ? product.imageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${product.productName}" id="mainImage">
                         </div>
                         <c:if test="${not empty productImages}">
                             <div class="thumbnail-images">
@@ -449,7 +449,7 @@
                             <div class="col-md-3">
                                 <a href="${pageContext.request.contextPath}/products/${sp.slug}" class="text-decoration-none">
                                     <div class="similar-product-card">
-                                        <img src="${not empty sp.imageUrl ? sp.imageUrl : '/images/no-product.png'}" alt="${sp.productName}">
+                                        <img src="${not empty sp.imageUrl ? sp.imageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${sp.productName}">
                                         <div class="card-body">
                                             <p class="title text-dark">${sp.productName}</p>
                                             <span class="price">₹<fmt:formatNumber value="${sp.price}"/></span>

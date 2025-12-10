@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -97,7 +97,7 @@ public class DashboardController {
     }
 
     // ========== DASHBOARD OVERVIEW ==========
-    @GetMapping
+    @RequestMapping(method = RequestMethod.GET)
     public String dashboard(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         hospitalService.updateLastLogin(hospital.getId());
@@ -115,7 +115,7 @@ public class DashboardController {
     }
 
     // ========== PROFILE MANAGEMENT ==========
-    @GetMapping("/profile")
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String profile(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         model.addAttribute("hospital", hospital);
@@ -214,7 +214,7 @@ public class DashboardController {
     }
 
     // ========== TREATMENT PACKAGES ==========
-    @GetMapping("/packages")
+    @RequestMapping(value = "/packages", method = RequestMethod.GET)
     public String packages(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         List<TreatmentPackage> packages = packageService.getPackagesByHospital(hospital.getId());
@@ -225,7 +225,7 @@ public class DashboardController {
         return "dashboard/packages";
     }
 
-    @GetMapping("/packages/add")
+    @RequestMapping(value = "/packages/add", method = RequestMethod.GET)
     public String addPackageForm(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         // Get all doctors registered with this hospital
@@ -272,7 +272,7 @@ public class DashboardController {
         return "redirect:/dashboard/packages";
     }
 
-    @GetMapping("/packages/edit/{id}")
+    @RequestMapping(value = "/packages/edit/{id}", method = RequestMethod.GET)
     public String editPackageForm(Authentication auth, @PathVariable Long id, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         TreatmentPackage pkg = packageService.findById(id)
@@ -380,7 +380,7 @@ public class DashboardController {
     }
 
     // ========== ACCOMMODATION ROOMS ==========
-    @GetMapping("/rooms")
+    @RequestMapping(value = "/rooms", method = RequestMethod.GET)
     public String rooms(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         List<Room> rooms = roomService.getRoomsByHospital(hospital.getId());
@@ -390,7 +390,7 @@ public class DashboardController {
         return "dashboard/rooms";
     }
 
-    @GetMapping("/rooms/add")
+    @RequestMapping(value = "/rooms/add", method = RequestMethod.GET)
     public String addRoomForm(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         model.addAttribute("hospital", hospital);
@@ -434,7 +434,7 @@ public class DashboardController {
         return "redirect:/dashboard/rooms";
     }
 
-    @GetMapping("/rooms/edit/{id}")
+    @RequestMapping(value = "/rooms/edit/{id}", method = RequestMethod.GET)
     public String editRoomForm(Authentication auth, @PathVariable Long id, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         Room room = roomService.findById(id)
@@ -539,7 +539,7 @@ public class DashboardController {
     // Vendors manage: Products
 
     // ========== DOCTOR MANAGEMENT ==========
-    @GetMapping("/doctors")
+    @RequestMapping(value = "/doctors", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     public String doctors(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
@@ -589,7 +589,7 @@ public class DashboardController {
     }
 
     // View pending doctor requests
-    @GetMapping("/doctors/requests")
+    @RequestMapping(value = "/doctors/requests", method = RequestMethod.GET)
     public String doctorRequests(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         List<DoctorHospitalAssociation> pendingRequests = 
@@ -601,7 +601,7 @@ public class DashboardController {
     }
 
     // View doctor request details
-    @GetMapping("/doctors/requests/{id}")
+    @RequestMapping(value = "/doctors/requests/{id}", method = RequestMethod.GET)
     public String doctorRequestDetails(Authentication auth, @PathVariable Long id, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         DoctorHospitalAssociation association = associationService.getAssociationsByHospital(hospital.getId())
@@ -672,7 +672,7 @@ public class DashboardController {
         return "redirect:/dashboard/doctors";
     }
 
-    @GetMapping("/doctors/add")
+    @RequestMapping(value = "/doctors/add", method = RequestMethod.GET)
     public String addDoctorForm(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         model.addAttribute("hospital", hospital);
@@ -716,7 +716,7 @@ public class DashboardController {
         return "redirect:/dashboard/doctors";
     }
 
-    @GetMapping("/doctors/edit/{id}")
+    @RequestMapping(value = "/doctors/edit/{id}", method = RequestMethod.GET)
     public String editDoctorForm(Authentication auth, @PathVariable Long id, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         Doctor doctor = doctorService.findById(id)
@@ -778,7 +778,7 @@ public class DashboardController {
     }
 
     // ========== BOOKING MANAGEMENT ==========
-    @GetMapping("/bookings")
+    @RequestMapping(value = "/bookings", method = RequestMethod.GET)
     public String bookings(Authentication auth,
                            @RequestParam(defaultValue = "0") int page,
                            @RequestParam(required = false) String status,
@@ -801,7 +801,7 @@ public class DashboardController {
         return "dashboard/bookings";
     }
 
-    @GetMapping("/bookings/{id}")
+    @RequestMapping(value = "/bookings/{id}", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     public String bookingDetails(Authentication auth, @PathVariable Long id, Model model) {
         Hospital hospital = getCurrentHospital(auth);
@@ -870,7 +870,7 @@ public class DashboardController {
     }
 
     // ========== PHOTO GALLERY ==========
-    @GetMapping("/gallery")
+    @RequestMapping(value = "/gallery", method = RequestMethod.GET)
     public String gallery(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         List<HospitalPhoto> photos = photoService.getPhotosByHospital(hospital.getId());
@@ -941,7 +941,7 @@ public class DashboardController {
     }
 
     // ========== DOCUMENTS ==========
-    @GetMapping("/documents")
+    @RequestMapping(value = "/documents", method = RequestMethod.GET)
     public String documents(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         List<HospitalDocument> documents = documentService.getDocumentsByHospital(hospital.getId());
@@ -972,7 +972,7 @@ public class DashboardController {
     }
 
     // ========== REVIEWS ==========
-    @GetMapping("/reviews")
+    @RequestMapping(value = "/reviews", method = RequestMethod.GET)
     public String reviews(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         List<Review> reviews = reviewService.getReviewsByHospital(hospital.getId());
@@ -1003,7 +1003,7 @@ public class DashboardController {
     }
 
     // ========== ENQUIRIES ==========
-    @GetMapping("/enquiries")
+    @RequestMapping(value = "/enquiries", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     public String enquiries(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
@@ -1018,7 +1018,7 @@ public class DashboardController {
         return "dashboard/enquiries";
     }
 
-    @GetMapping("/enquiries/{id}")
+    @RequestMapping(value = "/enquiries/{id}", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     public String enquiryDetails(Authentication auth, @PathVariable Long id, Model model) {
         Hospital hospital = getCurrentHospital(auth);
@@ -1086,7 +1086,7 @@ public class DashboardController {
     }
 
     // ========== SETTINGS ==========
-    @GetMapping("/settings")
+    @RequestMapping(value = "/settings", method = RequestMethod.GET)
     public String settings(Authentication auth, Model model) {
         Hospital hospital = getCurrentHospital(auth);
         model.addAttribute("hospital", hospital);

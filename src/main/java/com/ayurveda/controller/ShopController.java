@@ -37,7 +37,7 @@ public class ShopController {
 
     // ==================== Product Catalog ====================
 
-    @GetMapping("/products")
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
     public String productCatalog(
             @RequestParam(required = false) Long category,
             @RequestParam(required = false) String search,
@@ -106,7 +106,7 @@ public class ShopController {
 
     // ==================== Product Details ====================
 
-    @GetMapping("/products/{slug}")
+    @RequestMapping(value = "/products/{slug}", method = RequestMethod.GET)
     public String productDetails(@PathVariable String slug, Authentication authentication, Model model) {
         Product product = productService.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -147,7 +147,7 @@ public class ShopController {
 
     // ==================== Shop by Category ====================
 
-    @GetMapping("/products/category/{slug}")
+    @RequestMapping(value = "/products/category/{slug}", method = RequestMethod.GET)
     public String productsByCategory(@PathVariable String slug,
                                      @RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "12") int size,
@@ -184,7 +184,7 @@ public class ShopController {
 
     // ==================== Quick View (AJAX) ====================
 
-    @GetMapping("/products/{id}/quick-view")
+    @RequestMapping(value = "/products/{id}/quick-view", method = RequestMethod.GET)
     @ResponseBody
     public Product quickView(@PathVariable Long id) {
         return productService.findById(id)

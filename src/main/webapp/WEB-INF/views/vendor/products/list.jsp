@@ -118,7 +118,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="${not empty product.imageUrl ? product.imageUrl : '/images/no-image.png'}" 
+                                            <img src="${not empty product.imageUrl ? product.imageUrl : pageContext.request.contextPath.concat('/images/no-image.png')}" 
                                                  alt="${product.productName}" class="product-img me-3">
                                             <div>
                                                 <strong>${product.productName}</strong>

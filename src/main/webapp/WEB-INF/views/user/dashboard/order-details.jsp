@@ -94,7 +94,7 @@
                         <div class="card-body">
                             <c:forEach items="${order.orderItems}" var="item">
                                 <div class="order-item">
-                                    <img src="${not empty item.productImageUrl ? item.productImageUrl : '/images/no-product.png'}" alt="${item.productName}">
+                                    <img src="${not empty item.productImageUrl ? item.productImageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${item.productName}">
                                     <div class="order-item-info">
                                         <div class="order-item-name">${item.productName}</div>
                                         <div class="order-item-vendor">Sold by: ${item.vendor != null ? item.vendor.storeDisplayName : 'Unknown Seller'}</div>

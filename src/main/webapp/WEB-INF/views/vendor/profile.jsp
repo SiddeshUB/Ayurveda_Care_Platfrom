@@ -151,7 +151,7 @@
                         <div class="col-lg-4">
                             <div class="card">
                                 <div class="card-body text-center">
-                                    <img src="${not empty vendor.storeLogoUrl ? vendor.storeLogoUrl : '/images/default-store.png'}" alt="Store Logo" class="store-logo mb-3">
+                                    <img src="${not empty vendor.storeLogoUrl ? vendor.storeLogoUrl : pageContext.request.contextPath.concat('/images/default-store.png')}" alt="Store Logo" class="store-logo mb-3">
                                     <h5>${vendor.storeDisplayName}</h5>
                                     <span class="badge ${vendor.status == 'APPROVED' ? 'bg-success' : vendor.status == 'PENDING' ? 'bg-warning' : 'bg-danger'}">
                                         ${vendor.status.displayName}

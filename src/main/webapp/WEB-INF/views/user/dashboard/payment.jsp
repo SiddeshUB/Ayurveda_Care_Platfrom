@@ -95,7 +95,7 @@
                 "currency": "INR",
                 "name": "AyurVeda",
                 "description": "Order #${order.orderNumber}",
-                "image": "${pageContext.request.contextPath}/images/logo.png",
+                "image": "${pageContext.request.contextPath}/images/logo.jpg",
                 "order_id": "${razorpayOrderId}",
                 "handler": function (response) {
                     // Show loading

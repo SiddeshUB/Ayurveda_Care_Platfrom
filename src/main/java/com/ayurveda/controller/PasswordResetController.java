@@ -29,7 +29,7 @@ public class PasswordResetController {
 
     // ==================== User Password Reset ====================
 
-    @GetMapping("/user/forgot-password")
+    @RequestMapping(value = "/user/forgot-password", method = RequestMethod.GET)
     public String userForgotPasswordPage() {
         return "user/forgot-password";
     }
@@ -59,7 +59,7 @@ public class PasswordResetController {
         return "redirect:/user/login";
     }
 
-    @GetMapping("/user/reset-password")
+    @RequestMapping(value = "/user/reset-password", method = RequestMethod.GET)
     public String userResetPasswordPage(@RequestParam(required = false) String token, Model model) {
         if (token == null || token.isEmpty()) {
             model.addAttribute("error", "Invalid reset link");
@@ -99,7 +99,7 @@ public class PasswordResetController {
 
     // ==================== Doctor Password Reset ====================
 
-    @GetMapping("/doctor/forgot-password")
+    @RequestMapping(value = "/doctor/forgot-password", method = RequestMethod.GET)
     public String doctorForgotPasswordPage() {
         return "doctor/forgot-password";
     }
@@ -128,7 +128,7 @@ public class PasswordResetController {
         return "redirect:/doctor/login";
     }
 
-    @GetMapping("/doctor/reset-password")
+    @RequestMapping(value = "/doctor/reset-password", method = RequestMethod.GET)
     public String doctorResetPasswordPage(@RequestParam(required = false) String token, Model model) {
         if (token == null || token.isEmpty()) {
             model.addAttribute("error", "Invalid reset link");
@@ -168,7 +168,7 @@ public class PasswordResetController {
 
     // ==================== Vendor Password Reset ====================
 
-    @GetMapping("/vendor/forgot-password")
+    @RequestMapping(value = "/vendor/forgot-password", method = RequestMethod.GET)
     public String vendorForgotPasswordPage() {
         return "vendor/forgot-password";
     }
@@ -197,7 +197,7 @@ public class PasswordResetController {
         return "redirect:/vendor/login";
     }
 
-    @GetMapping("/vendor/reset-password")
+    @RequestMapping(value = "/vendor/reset-password", method = RequestMethod.GET)
     public String vendorResetPasswordPage(@RequestParam(required = false) String token, Model model) {
         if (token == null || token.isEmpty()) {
             model.addAttribute("error", "Invalid reset link");

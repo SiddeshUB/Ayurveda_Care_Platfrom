@@ -13,7 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     // ========== REGISTRATION & LOGIN ==========
-    @GetMapping("/register")
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String registerPage(Model model) {
         model.addAttribute("user", new User());
         return "user/register";
@@ -98,7 +98,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(@RequestParam(required = false) String error,
                            @RequestParam(required = false) String logout,
                            @RequestParam(required = false) String redirectUrl,
@@ -117,7 +117,7 @@ public class UserController {
     }
 
     // ========== DASHBOARD ==========
-    @GetMapping("/dashboard")
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public String dashboard(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         userService.updateLastLogin(user.getId());
@@ -152,7 +152,7 @@ public class UserController {
     }
 
     // ========== SEARCH HOSPITALS ==========
-    @GetMapping("/hospitals")
+    @RequestMapping(value = "/hospitals", method = RequestMethod.GET)
     public String searchHospitals(@RequestParam(defaultValue = "") String search,
                                   @RequestParam(defaultValue = "") String location,
                                   @RequestParam(defaultValue = "") String therapy,
@@ -176,7 +176,7 @@ public class UserController {
     }
 
     // ========== SAVED CENTERS ==========
-    @GetMapping("/saved-centers")
+    @RequestMapping(value = "/saved-centers", method = RequestMethod.GET)
     public String savedCenters(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<SavedCenter> savedCenters = userService.getSavedCenters(user.getId());
@@ -201,7 +201,7 @@ public class UserController {
         return "redirect:/user/saved-centers";
     }
 
-    @GetMapping("/save-center/{hospitalId}")
+    @RequestMapping(value = "/save-center/{hospitalId}", method = RequestMethod.GET)
     public String saveCenterGet(@PathVariable Long hospitalId,
                                 Authentication auth,
                                 RedirectAttributes redirectAttributes) {
@@ -223,7 +223,7 @@ public class UserController {
     }
 
     // ========== ENQUIRIES ==========
-    @GetMapping("/enquiries")
+    @RequestMapping(value = "/enquiries", method = RequestMethod.GET)
     public String enquiries(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<UserEnquiry> enquiries = userService.getUserEnquiries(user.getId());
@@ -234,7 +234,7 @@ public class UserController {
         return "user/dashboard/enquiries";
     }
 
-    @GetMapping("/enquiry/{hospitalId}")
+    @RequestMapping(value = "/enquiry/{hospitalId}", method = RequestMethod.GET)
     public String enquiryForm(@PathVariable Long hospitalId,
                               Authentication auth,
                               Model model) {
@@ -274,7 +274,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/enquiry/details/{enquiryId}")
+    @RequestMapping(value = "/enquiry/details/{enquiryId}", method = RequestMethod.GET)
     public String enquiryDetails(@PathVariable Long enquiryId,
                                 Authentication auth,
                                 Model model) {
@@ -293,7 +293,7 @@ public class UserController {
     }
 
     // ========== PROFILE ==========
-    @GetMapping("/profile")
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String profile(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         model.addAttribute("user", user);
@@ -339,7 +339,7 @@ public class UserController {
     }
 
     // ========== PACKAGE BOOKINGS ==========
-    @GetMapping("/bookings")
+    @RequestMapping(value = "/bookings", method = RequestMethod.GET)
     public String packageBookings(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<Booking> bookings = bookingService.getBookingsByUser(user.getId());
@@ -349,7 +349,7 @@ public class UserController {
     }
     
     // ========== ROOM BOOKINGS ==========
-    @GetMapping("/room-bookings")
+    @RequestMapping(value = "/room-bookings", method = RequestMethod.GET)
     public String roomBookings(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<RoomBooking> bookings = roomService.getRoomBookingsByUser(user.getId());
@@ -360,7 +360,7 @@ public class UserController {
         return "user/dashboard/room-bookings";
     }
 
-    @GetMapping("/room-booking/details/{bookingId}")
+    @RequestMapping(value = "/room-booking/details/{bookingId}", method = RequestMethod.GET)
     public String roomBookingDetails(@PathVariable Long bookingId,
                                     Authentication auth,
                                     Model model) {
@@ -397,7 +397,7 @@ public class UserController {
     // ========== PRODUCTS & CART ==========
     // Note: Main product browsing is now handled by ShopController (/products)
     // This is a simplified version for the user dashboard
-    @GetMapping("/products")
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
     public String browseProducts(@RequestParam(defaultValue = "") String search,
                                  @RequestParam(defaultValue = "0") int page,
                                  Authentication auth,
@@ -426,7 +426,7 @@ public class UserController {
         return "user/dashboard/products";
     }
 
-    @GetMapping("/cart")
+    @RequestMapping(value = "/cart", method = RequestMethod.GET)
     public String viewCart(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<Cart> cartItems = cartService.getCartItems(user.getId());
@@ -483,7 +483,7 @@ public class UserController {
         return "redirect:/user/cart";
     }
 
-    @GetMapping("/checkout")
+    @RequestMapping(value = "/checkout", method = RequestMethod.GET)
     public String checkout(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<Cart> cartItems = cartService.getCartItems(user.getId());
@@ -516,7 +516,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/order/confirmation/{orderNumber}")
+    @RequestMapping(value = "/order/confirmation/{orderNumber}", method = RequestMethod.GET)
     public String orderConfirmation(@PathVariable String orderNumber,
                                    Authentication auth,
                                    Model model) {
@@ -534,7 +534,7 @@ public class UserController {
         return "user/dashboard/order-confirmation";
     }
 
-    @GetMapping("/orders")
+    @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public String myOrders(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         List<ProductOrder> orders = orderService.getUserOrders(user.getId());
@@ -545,7 +545,7 @@ public class UserController {
         return "user/dashboard/orders";
     }
 
-    @GetMapping("/order/details/{orderId}")
+    @RequestMapping(value = "/order/details/{orderId}", method = RequestMethod.GET)
     public String orderDetails(@PathVariable Long orderId,
                               Authentication auth,
                               Model model) {
@@ -564,7 +564,7 @@ public class UserController {
     }
 
     // ========== CONSULTATIONS ==========
-    @GetMapping("/dashboard/consultations")
+    @RequestMapping(value = "/dashboard/consultations", method = RequestMethod.GET)
     public String consultations(Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         
@@ -576,7 +576,7 @@ public class UserController {
         return "user/dashboard/consultations";
     }
 
-    @GetMapping("/dashboard/consultations/{id}")
+    @RequestMapping(value = "/dashboard/consultations/{id}", method = RequestMethod.GET)
     public String consultationDetails(@PathVariable Long id, Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         
