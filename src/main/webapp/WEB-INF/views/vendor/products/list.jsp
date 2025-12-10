@@ -118,6 +118,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
+<<<<<<< HEAD
                                             <c:choose>
                                                 <c:when test="${not empty product.imageUrl}">
                                                     <img src="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" 
@@ -128,6 +129,10 @@
                                                          alt="${product.productName}" class="product-img me-3">
                                                 </c:otherwise>
                                             </c:choose>
+=======
+                                            <img src="${not empty product.imageUrl ? product.imageUrl : pageContext.request.contextPath.concat('/images/no-image.png')}" 
+                                                 alt="${product.productName}" class="product-img me-3">
+>>>>>>> edaa4568e405c23538b45d4e9bbc206b39763f74
                                             <div>
                                                 <strong>${product.productName}</strong>
                                                 <c:if test="${product.isFeatured}">

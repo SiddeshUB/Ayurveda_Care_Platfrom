@@ -48,7 +48,7 @@ public class VendorController {
 
     // ==================== Authentication ====================
 
-    @GetMapping("/login")
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(HttpSession session) {
         if (session.getAttribute("vendor") != null) {
             return "redirect:/vendor/dashboard";
@@ -90,7 +90,7 @@ public class VendorController {
         }
     }
 
-    @GetMapping("/logout")
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpSession session) {
         session.removeAttribute("vendor");
         session.removeAttribute("vendorId");
@@ -99,7 +99,7 @@ public class VendorController {
 
     // ==================== Registration ====================
 
-    @GetMapping("/register")
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String registerPage(Model model) {
         model.addAttribute("vendor", new Vendor());
         model.addAttribute("businessTypes", BusinessType.values());
@@ -158,7 +158,7 @@ public class VendorController {
 
     // ==================== Dashboard ====================
 
-    @GetMapping("/dashboard")
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public String dashboard(HttpSession session, Model model) {
         Vendor vendor = getVendorFromSession(session);
         if (vendor == null) return "redirect:/vendor/login";
@@ -186,7 +186,7 @@ public class VendorController {
 
     // ==================== Products ====================
 
-    @GetMapping("/products")
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
     public String products(@RequestParam(defaultValue = "0") int page,
                           @RequestParam(defaultValue = "10") int size,
                           HttpSession session, Model model) {
@@ -203,7 +203,7 @@ public class VendorController {
         return "vendor/products/list";
     }
 
-    @GetMapping("/products/add")
+    @RequestMapping(value = "/products/add", method = RequestMethod.GET)
     public String addProductPage(HttpSession session, Model model) {
         Vendor vendor = getVendorFromSession(session);
         if (vendor == null) return "redirect:/vendor/login";
@@ -253,7 +253,7 @@ public class VendorController {
         }
     }
 
-    @GetMapping("/products/edit/{id}")
+    @RequestMapping(value = "/products/edit/{id}", method = RequestMethod.GET)
     public String editProductPage(@PathVariable Long id, HttpSession session, Model model) {
         Vendor vendor = getVendorFromSession(session);
         if (vendor == null) return "redirect:/vendor/login";
@@ -380,7 +380,7 @@ public class VendorController {
 
     // ==================== Orders ====================
 
-    @GetMapping("/orders")
+    @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public String orders(@RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
                         HttpSession session, Model model) {
@@ -423,7 +423,7 @@ public class VendorController {
 
     // ==================== Reviews ====================
 
-    @GetMapping("/reviews")
+    @RequestMapping(value = "/reviews", method = RequestMethod.GET)
     public String reviews(@RequestParam(defaultValue = "0") int page,
                          @RequestParam(defaultValue = "10") int size,
                          HttpSession session, Model model) {
@@ -459,7 +459,7 @@ public class VendorController {
 
     // ==================== Wallet & Earnings ====================
 
-    @GetMapping("/wallet")
+    @RequestMapping(value = "/wallet", method = RequestMethod.GET)
     public String wallet(@RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size,
                         HttpSession session, Model model) {
@@ -479,7 +479,7 @@ public class VendorController {
 
     // ==================== Profile & Settings ====================
 
-    @GetMapping("/profile")
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public String profile(HttpSession session, Model model) {
         Vendor vendor = getVendorFromSession(session);
         if (vendor == null) return "redirect:/vendor/login";

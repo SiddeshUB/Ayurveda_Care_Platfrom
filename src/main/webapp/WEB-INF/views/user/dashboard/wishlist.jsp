@@ -88,7 +88,7 @@
                             <div class="wishlist-item">
                                 <div class="wishlist-item-image">
                                     <a href="${pageContext.request.contextPath}/products/${item.product.slug}">
-                                        <img src="${not empty item.product.imageUrl ? item.product.imageUrl : '/images/no-product.png'}" alt="${item.product.productName}">
+                                        <img src="${not empty item.product.imageUrl ? item.product.imageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${item.product.productName}">
                                     </a>
                                 </div>
                                 <div class="wishlist-item-info">

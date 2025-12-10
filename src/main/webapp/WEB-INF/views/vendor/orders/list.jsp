@@ -97,7 +97,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-3">
                                 <div class="product-mini">
-                                    <img src="${not empty item.productImageUrl ? item.productImageUrl : '/images/no-image.png'}" alt="${item.productName}">
+                                    <img src="${not empty item.productImageUrl ? item.productImageUrl : pageContext.request.contextPath.concat('/images/no-image.png')}" alt="${item.productName}">
                                     <div>
                                         <strong>${item.productName}</strong>
                                         <br><small class="text-muted">Qty: ${item.quantity}</small>

@@ -103,7 +103,7 @@
                             <div class="order-items">
                                 <c:forEach items="${order.orderItems}" var="item" end="2">
                                     <div class="order-item">
-                                        <img src="${not empty item.productImageUrl ? item.productImageUrl : '/images/no-product.png'}" alt="${item.productName}">
+                                        <img src="${not empty item.productImageUrl ? item.productImageUrl : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${item.productName}">
                                         <div class="order-item-info">
                                             <div class="order-item-name">${item.productName}</div>
                                             <div class="order-item-qty">Qty: ${item.quantity}</div>

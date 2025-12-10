@@ -54,7 +54,7 @@ public class PublicProfileController {
         this.consultationService = consultationService;
     }
 
-    @GetMapping("/hospitals")
+    @RequestMapping(value = "/hospitals", method = RequestMethod.GET)
     public String listHospitals(@RequestParam(defaultValue = "") String search,
                                 @RequestParam(defaultValue = "0") int page,
                                 org.springframework.security.core.Authentication auth,
@@ -87,7 +87,7 @@ public class PublicProfileController {
         }
     }
 
-    @GetMapping("/hospital/profile/{id}")
+    @RequestMapping(value = "/hospital/profile/{id}", method = RequestMethod.GET)
     public String hospitalProfile(@PathVariable Long id,
                                   @RequestParam(defaultValue = "overview") String tab,
                                   org.springframework.security.core.Authentication auth,
@@ -135,7 +135,7 @@ public class PublicProfileController {
         return "public/hospital-profile";
     }
 
-    @GetMapping("/booking/enquiry/{hospitalId}")
+    @RequestMapping(value = "/booking/enquiry/{hospitalId}", method = RequestMethod.GET)
     public String bookingEnquiryForm(@PathVariable Long hospitalId,
                                      @RequestParam(required = false) Long packageId,
                                      org.springframework.security.core.Authentication auth,
@@ -324,7 +324,7 @@ public class PublicProfileController {
         }
     }
 
-    @GetMapping("/booking/confirmation/{bookingNumber}")
+    @RequestMapping(value = "/booking/confirmation/{bookingNumber}", method = RequestMethod.GET)
     public String bookingConfirmation(@PathVariable String bookingNumber, Model model) {
         Booking booking = bookingService.findByBookingNumber(bookingNumber)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
@@ -346,7 +346,7 @@ public class PublicProfileController {
     }
 
     // ========== PUBLIC DOCTOR PAGES ==========
-    @GetMapping("/doctors")
+    @RequestMapping(value = "/doctors", method = RequestMethod.GET)
     public String listDoctors(@RequestParam(defaultValue = "") String search,
                               org.springframework.security.core.Authentication auth,
                               Model model) {
@@ -367,7 +367,7 @@ public class PublicProfileController {
         return "public/doctors";
     }
 
-    @GetMapping("/doctor/profile/{id}")
+    @RequestMapping(value = "/doctor/profile/{id}", method = RequestMethod.GET)
     public String doctorProfile(@PathVariable Long id,
                                 org.springframework.security.core.Authentication auth,
                                 Model model) {
@@ -392,7 +392,7 @@ public class PublicProfileController {
     }
 
     // ========== ROOM BOOKING ==========
-    @GetMapping("/room/booking/{roomId}")
+    @RequestMapping(value = "/room/booking/{roomId}", method = RequestMethod.GET)
     public String roomBookingForm(@PathVariable Long roomId,
                                   @RequestParam(required = false) String checkIn,
                                   @RequestParam(required = false) String checkOut,
@@ -439,7 +439,7 @@ public class PublicProfileController {
         }
     }
 
-    @GetMapping("/room/booking/confirmation/{bookingNumber}")
+    @RequestMapping(value = "/room/booking/confirmation/{bookingNumber}", method = RequestMethod.GET)
     public String roomBookingConfirmation(@PathVariable String bookingNumber, Model model) {
         RoomBooking booking = roomService.findRoomBookingByBookingNumber(bookingNumber)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
@@ -449,7 +449,7 @@ public class PublicProfileController {
 
     // ========== PUBLIC DETAIL PAGES (VIEW ONLY) ==========
     
-    @GetMapping("/package/details/{id}")
+    @RequestMapping(value = "/package/details/{id}", method = RequestMethod.GET)
     public String packageDetails(@PathVariable Long id, Model model) {
         Optional<TreatmentPackage> packageOpt = packageService.findById(id);
         
@@ -468,7 +468,7 @@ public class PublicProfileController {
         return "public/package-details";
     }
 
-    @GetMapping("/room/details/{id}")
+    @RequestMapping(value = "/room/details/{id}", method = RequestMethod.GET)
     public String roomDetails(@PathVariable Long id, Model model) {
         Optional<Room> roomOpt = roomService.findById(id);
         
@@ -487,7 +487,7 @@ public class PublicProfileController {
         return "public/room-details";
     }
 
-    @GetMapping("/product/details/{id}")
+    @RequestMapping(value = "/product/details/{id}", method = RequestMethod.GET)
     public String productDetails(@PathVariable Long id, Model model) {
         Optional<Product> productOpt = productService.findById(id);
         
@@ -513,7 +513,7 @@ public class PublicProfileController {
     }
 
     // ========== DIRECT CONSULTATION BOOKING ==========
-    @GetMapping("/consultation/book/{doctorId}")
+    @RequestMapping(value = "/consultation/book/{doctorId}", method = RequestMethod.GET)
     public String consultationBookingForm(@PathVariable Long doctorId,
                                          org.springframework.security.core.Authentication auth,
                                          Model model,
