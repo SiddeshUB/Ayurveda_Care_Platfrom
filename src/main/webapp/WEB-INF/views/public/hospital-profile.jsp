@@ -8,104 +8,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${hospital.centerName} - AyurVedaCare</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
-        /* User Menu Dropdown - Amazon Style */
-        .user-menu-container {
-            position: relative;
-            display: inline-block;
+        :root {
+            --primary-dark: #1a2e1a;
+            --primary-green: #2d4a2d;
+            --accent-gold: #c9a227;
+            --accent-gold-light: #e6b55c;
+            --text-light: #f5f0e8;
+            --text-cream: #e8dcc8;
+            --bg-cream: #fdfaf4;
+            --bg-dark: #0a0f0a;
         }
         
-        .user-name-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
-            border-radius: 20px;
-            background: rgba(230, 181, 92, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .user-name-link:hover {
-            background: rgba(230, 181, 92, 0.2);
-        }
-        
-        .user-name-link i.fa-user-circle {
-            font-size: 20px;
-            color: #e6b55c;
-        }
-        
-        .user-name-link span {
-            font-weight: 500;
-            color: #fff;
-        }
-        
-        .user-name-link .fa-chevron-down {
-            font-size: 12px;
-            color: #e6b55c;
-            transition: transform 0.3s ease;
-        }
-        
-        .user-menu-container:hover .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-        
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            min-width: 220px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
+        /* ========== NAVBAR ========== */
+        .navbar {
+            background: rgba(26, 46, 26, 0.98);
+            padding: 15px 0;
+            transition: all 0.4s ease;
+            position: fixed;
+            width: 100%;
+            top: 0;
             z-index: 1000;
-            padding: 8px 0;
+            backdrop-filter: blur(10px);
         }
         
-        .user-menu-container:hover .user-dropdown {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .navbar.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
         }
         
-        .user-dropdown a {
+        .navbar-brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-gold) !important;
+            letter-spacing: 1px;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        
+        .navbar-nav .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            white-space: nowrap;
+        }
+        
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            padding: 8px 18px !important;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--accent-gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+        
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: var(--accent-gold) !important;
+        }
+        
+        .btn-nav {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-light) 100%);
+            color: var(--primary-dark) !important;
+            padding: 10px 25px !important;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 10px;
+            transition: all 0.4s ease;
+            border: none;
+        }
+        
+        .btn-nav:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(201, 162, 39, 0.4);
+            color: var(--primary-dark) !important;
+        }
+        
+        .btn-nav::after {
+            display: none;
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(201, 162, 39, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        /* User Dropdown */
+        .user-dropdown .dropdown-toggle {
+            background: rgba(201, 162, 39, 0.15);
+            border-radius: 30px;
+            padding: 8px 20px !important;
+        }
+        
+        .user-dropdown .dropdown-toggle::after {
+            display: none;
+        }
+        
+        .user-dropdown .dropdown-menu {
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 10px 0;
+            margin-top: 10px;
+        }
+        
+        .user-dropdown .dropdown-item {
             padding: 12px 20px;
-            color: #333 !important;
-            text-decoration: none;
-            transition: background 0.2s ease;
-            font-size: 14px;
+            color: #333;
+            transition: all 0.3s ease;
         }
         
-        .user-dropdown a:hover {
-            background: #f5f5f5;
-            color: #e6b55c !important;
+        .user-dropdown .dropdown-item:hover {
+            background: rgba(201, 162, 39, 0.1);
+            color: var(--accent-gold);
         }
         
-        .user-dropdown a i {
-            width: 18px;
-            color: #666;
-        }
-        
-        .user-dropdown a:hover i {
-            color: #e6b55c;
-        }
-        
-        .dropdown-divider {
-            height: 1px;
-            background: #e0e0e0;
-            margin: 8px 0;
+        .user-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 10px;
+            color: var(--accent-gold);
         }
         
         /* Hero Section */
@@ -666,60 +728,68 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="${pageContext.request.contextPath}/" class="nav-logo">
-                <i class="fas fa-leaf"></i>
-                <span>AyurVeda<span class="highlight">Care</span></span>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/">
+                <i class="fas fa-leaf me-2"></i>Ayurveda Wellness
             </a>
-            
-            <div class="nav-menu" id="navMenu">
-                <a href="${pageContext.request.contextPath}/" class="nav-link">Home</a>
-                <a href="${pageContext.request.contextPath}/hospitals" class="nav-link">Find Centers</a>
-                <a href="${pageContext.request.contextPath}/doctors" class="nav-link">Find Doctors</a>
-                <a href="${pageContext.request.contextPath}/about" class="nav-link">About</a>
-                <a href="${pageContext.request.contextPath}/services" class="nav-link">Services</a>
-                <a href="${pageContext.request.contextPath}/contact" class="nav-link">Contact</a>
-                <c:choose>
-                    <c:when test="${not empty currentUser}">
-                        <div class="user-menu-container">
-                            <a href="#" class="nav-link user-name-link" id="userMenuToggle">
-                                <i class="fas fa-user-circle"></i>
-                                <span>${currentUser.fullName}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </a>
-                            <div class="user-dropdown" id="userDropdown">
-                                <a href="${pageContext.request.contextPath}/user/dashboard">
-                                    <i class="fas fa-th-large"></i> Dashboard
-                                </a>
-                                <a href="${pageContext.request.contextPath}/user/profile">
-                                    <i class="fas fa-user"></i> Your Profile
-                                </a>
-                                <a href="${pageContext.request.contextPath}/user/enquiries">
-                                    <i class="fas fa-envelope"></i> My Enquiries
-                                </a>
-                                <a href="${pageContext.request.contextPath}/user/saved-centers">
-                                    <i class="fas fa-heart"></i> Saved Centers
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="${pageContext.request.contextPath}/user/logout">
-                                    <i class="fas fa-sign-out-alt"></i> Sign Out
-                                </a>
-                            </div>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/user/login" class="nav-link">Login</a>
-                        <a href="${pageContext.request.contextPath}/user/register" class="nav-link nav-cta">Sign Up</a>
-                        <a href="${pageContext.request.contextPath}/hospital/register" class="nav-link nav-cta">For Centers</a>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-            
-            <button class="nav-toggle" id="navToggle">
-                <i class="fas fa-bars"></i>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="${pageContext.request.contextPath}/hospitals">Find Centers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/doctors">Find Doctors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/products"><i class="fas fa-shopping-bag me-1"></i>Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/contact">Contact</a>
+                    </li>
+                    <c:choose>
+                        <c:when test="${not empty currentUser}">
+                            <li class="nav-item dropdown user-dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle me-2"></i>${currentUser.fullName}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/user/dashboard"><i class="fas fa-th-large"></i>Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/user/profile"><i class="fas fa-user"></i>Profile</a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/user/enquiries"><i class="fas fa-envelope"></i>Enquiries</a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/user/saved-centers"><i class="fas fa-heart"></i>Saved Centers</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/user/logout"><i class="fas fa-sign-out-alt"></i>Sign Out</a></li>
+                                </ul>
+                            </li>
+                        </c:when>
+                        <c:otherwise>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/user/login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn-nav" href="${pageContext.request.contextPath}/user/register">Sign Up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn-nav" href="${pageContext.request.contextPath}/hospital/register">For Centers</a>
+                            </li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -1216,7 +1286,31 @@
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="${pageContext.request.contextPath}/js/main.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 50
+        });
+        
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>
 

@@ -158,7 +158,14 @@
                                     </span>
                                     <hr>
                                     <div class="text-start">
-                                        <p class="mb-2"><strong>Member since:</strong><br><fmt:formatDate value="${vendor.createdAt}" pattern="dd MMMM yyyy"/></p>
+                                        <p class="mb-2"><strong>Member since:</strong><br>
+                                            <%
+                                                com.ayurveda.entity.Vendor v = (com.ayurveda.entity.Vendor) pageContext.getAttribute("vendor");
+                                                if (v != null && v.getCreatedAt() != null) {
+                                                    out.print(v.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+                                                }
+                                            %>
+                                        </p>
                                         <p class="mb-2"><strong>Commission Rate:</strong><br>${vendor.commissionPercentage}%</p>
                                         <p class="mb-0"><strong>Payment Cycle:</strong><br>${vendor.paymentCycle.displayName}</p>
                                     </div>

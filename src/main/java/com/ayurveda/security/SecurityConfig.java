@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.nio.charset.StandardCharsets;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -179,6 +180,15 @@ public class SecurityConfig {
     @Order(5)
     public SecurityFilterChain hospitalFilterChain(HttpSecurity http) throws Exception {
         http
+            .securityMatcher(request -> {
+                String path = request.getRequestURI();
+                // Exclude vendor, admin, doctor, and user routes (handled by other filter chains)
+                return path != null && 
+                       !path.startsWith("/vendor/") && 
+                       !path.startsWith("/admin/") && 
+                       !path.startsWith("/doctor/") && 
+                       !path.startsWith("/user/");
+            })
             .csrf(csrf -> csrf.disable())
             // Disable request cache to prevent redirect loops
             .requestCache(cache -> cache.disable())
@@ -201,6 +211,8 @@ public class SecurityConfig {
                 .requestMatchers("/shop", "/shop/**").permitAll()
                 .requestMatchers("/user/register", "/user/login").permitAll()
                 .requestMatchers("/consultation/book/**").permitAll()
+                // Vendor routes - permit all (vendor uses session-based auth)
+                .requestMatchers("/vendor/**").permitAll()
                 
                 // Booking/action pages - require USER login
                 .requestMatchers("/booking/enquiry/**").hasRole("USER") // Requires user authentication
