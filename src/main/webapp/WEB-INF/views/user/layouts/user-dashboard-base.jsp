@@ -689,6 +689,10 @@
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Main Menu</div>
+                <a href="${pageContext.request.contextPath}/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/user/dashboard" class="nav-item ${param.activeNav == 'dashboard' ? 'active' : ''}">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>

@@ -231,6 +231,9 @@
         </div>
         
         <div class="sidebar-menu">
+            <a href="${pageContext.request.contextPath}/">
+                <i class="fas fa-home"></i>Home
+            </a>
             <a href="${pageContext.request.contextPath}/vendor/dashboard" class="active">
                 <i class="fas fa-tachometer-alt"></i>Dashboard
             </a>
