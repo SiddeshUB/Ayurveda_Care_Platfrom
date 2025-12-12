@@ -260,4 +260,39 @@ public class HospitalService {
         hospital.setLogoUrl(logoUrl);
         return hospitalRepository.save(hospital);
     }
+
+    // ==================== Password Reset ====================
+    
+    @Transactional
+    public void generatePasswordResetToken(String email, String phone) {
+        Hospital hospital = hospitalRepository.findByEmail(email.toLowerCase().trim())
+                .orElseThrow(() -> new RuntimeException("Hospital not found with this email"));
+
+        // Check if contact person phone matches
+        if (hospital.getContactPersonPhone() == null || !hospital.getContactPersonPhone().equals(phone)) {
+            throw new RuntimeException("Phone number does not match the registered phone number");
+        }
+
+        String token = java.util.UUID.randomUUID().toString();
+        hospital.setPasswordResetToken(token);
+        hospital.setPasswordResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        hospitalRepository.save(hospital);
+    }
+
+    public Optional<Hospital> findByPasswordResetToken(String token) {
+        return hospitalRepository.findByPasswordResetToken(token)
+                .filter(hospital -> hospital.getPasswordResetTokenExpiry() != null &&
+                        hospital.getPasswordResetTokenExpiry().isAfter(LocalDateTime.now()));
+    }
+
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        Hospital hospital = findByPasswordResetToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired reset token"));
+
+        hospital.setPassword(passwordEncoder.encode(newPassword));
+        hospital.setPasswordResetToken(null);
+        hospital.setPasswordResetTokenExpiry(null);
+        hospitalRepository.save(hospital);
+    }
 }

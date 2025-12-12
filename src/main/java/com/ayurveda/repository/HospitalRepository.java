@@ -46,4 +46,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
            "LOWER(h.state) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(h.therapiesOffered) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<Hospital> searchAllApprovedHospitals(@Param("query") String query, Pageable pageable);
+    
+    Optional<Hospital> findByPasswordResetToken(String token);
 }

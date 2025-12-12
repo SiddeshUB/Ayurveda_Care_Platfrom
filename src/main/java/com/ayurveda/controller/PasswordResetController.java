@@ -26,6 +26,9 @@ public class PasswordResetController {
     private VendorService vendorService;
 
     @Autowired
+    private HospitalService hospitalService;
+
+    @Autowired
     private EmailService emailService;
 
     // ==================== User Password Reset ====================
@@ -234,6 +237,75 @@ public class PasswordResetController {
             return "redirect:/vendor/reset-password?token=" + token;
         }
         return "redirect:/vendor/login";
+    }
+
+    // ==================== Hospital Password Reset ====================
+
+    @RequestMapping(value = "/hospital/forgot-password", method = RequestMethod.GET)
+    public String hospitalForgotPasswordPage() {
+        return "hospital/forgot-password";
+    }
+
+    @PostMapping("/hospital/forgot-password")
+    public String hospitalForgotPassword(@RequestParam String email,
+                                       @RequestParam String phone,
+                                       HttpServletRequest request,
+                                       RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
+        try {
+            hospitalService.generatePasswordResetToken(email, phone);
+            var hospitalOpt = hospitalService.findByEmail(email);
+            if (hospitalOpt.isPresent()) {
+                var hospital = hospitalOpt.get();
+                String baseUrl = getBaseUrl(request);
+                emailService.sendPasswordResetEmail(hospital.getEmail(), hospital.getPasswordResetToken(), "hospital", baseUrl);
+                redirectAttributes.addFlashAttribute("success", "Password reset link has been sent to your email. Please check your inbox.");
+            }
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/hospital/forgot-password";
+        } catch (MessagingException e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to send email. Please try again later.");
+            return "redirect:/hospital/forgot-password";
+        }
+        return "redirect:/hospital/login";
+    }
+
+    @RequestMapping(value = "/hospital/reset-password", method = RequestMethod.GET)
+    public String hospitalResetPasswordPage(@RequestParam(required = false) String token, Model model) {
+        if (token == null || token.isEmpty()) {
+            model.addAttribute("error", "Invalid reset link");
+            return "hospital/reset-password";
+        }
+        var hospitalOpt = hospitalService.findByPasswordResetToken(token);
+        if (hospitalOpt.isEmpty()) {
+            model.addAttribute("error", "Invalid or expired reset token");
+        } else {
+            model.addAttribute("token", token);
+        }
+        return "hospital/reset-password";
+    }
+
+    @PostMapping("/hospital/reset-password")
+    public String hospitalResetPassword(@RequestParam String token,
+                                      @RequestParam String newPassword,
+                                      @RequestParam String confirmPassword,
+                                      RedirectAttributes redirectAttributes) {
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Passwords do not match");
+            return "redirect:/hospital/reset-password?token=" + token;
+        }
+        if (newPassword.length() < 6) {
+            redirectAttributes.addFlashAttribute("error", "Password must be at least 6 characters long");
+            return "redirect:/hospital/reset-password?token=" + token;
+        }
+        try {
+            hospitalService.resetPassword(token, newPassword);
+            redirectAttributes.addFlashAttribute("success", "Password has been reset successfully. Please login with your new password.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/hospital/reset-password?token=" + token;
+        }
+        return "redirect:/hospital/login";
     }
 
     // Helper method to get base URL from request
