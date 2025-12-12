@@ -865,25 +865,169 @@
     </section>
 
     <!-- Animation Images Section -->
-    <section class="animation-section">
-        <div class="animation-container">
-            <div class="animation-left">
-                <img src="https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                     alt="Yoga Meditation" class="animation-image">
-            </div>
-            
-            <div class="animation-center">
-                <h3>Holistic Balance</h3>
-                <p>Ayurveda teaches us that true wellness comes from harmony between body, mind, and spirit. Our ancient practices bring modern healing.</p>
-                <a href="${pageContext.request.contextPath}/services" class="btn-gold">Explore Balance</a>
-            </div>
-            
-            <div class="animation-right">
-                <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                     alt="Ayurvedic Treatment" class="animation-image">
-            </div>
+   <section class="balance-section">
+    <div class="balance-container">
+        <div class="balance-left">
+            <img src="https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                 alt="Yoga Meditation" class="balance-image">
         </div>
-    </section>
+        
+        <div class="balance-center">
+            <h3>Holistic Balance</h3>
+            <p>Ayurveda teaches us that true wellness comes from harmony between body, mind, and spirit. Our ancient practices bring modern healing.</p>
+            <a href="${pageContext.request.contextPath}/services" class="btn-gold">Explore Balance</a>
+        </div>
+        
+        <div class="balance-right">
+            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                 alt="Ayurvedic Treatment" class="balance-image">
+        </div>
+    </div>
+</section>
+
+<style>
+    .balance-section {
+        padding: 80px 20px;
+        background-color: #f9f7f2;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .balance-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+    }
+    
+    .balance-left, .balance-right {
+        flex: 1;
+        min-width: 300px;
+        max-width: 400px;
+    }
+    
+    .balance-center {
+        flex: 1.2;
+        min-width: 300px;
+        max-width: 500px;
+        padding: 0 20px;
+        text-align: center;
+    }
+    
+    .balance-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .balance-left .balance-image {
+        border-top-right-radius: 40px;
+        border-bottom-left-radius: 40px;
+    }
+    
+    .balance-right .balance-image {
+        border-top-left-radius: 40px;
+        border-bottom-right-radius: 40px;
+    }
+    
+    .balance-image:hover {
+        transform: scale(1.02);
+    }
+    
+    .balance-center h3 {
+        color: #8a6d3b;
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .balance-center h3:after {
+        content: '';
+        position: absolute;
+        width: 60%;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #8a6d3b, transparent);
+        bottom: -10px;
+        left: 20%;
+    }
+    
+    .balance-center p {
+        color: #555;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 30px;
+        padding: 0 10px;
+    }
+    
+    .btn-gold {
+        display: inline-block;
+        background: linear-gradient(to right, #c9a959, #8a6d3b);
+        color: white;
+        padding: 14px 32px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(138, 109, 59, 0.2);
+    }
+    
+    .btn-gold:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(138, 109, 59, 0.3);
+        background: linear-gradient(to right, #8a6d3b, #c9a959);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .balance-container {
+            flex-direction: column;
+        }
+        
+        .balance-left, .balance-center, .balance-right {
+            max-width: 100%;
+        }
+        
+        .balance-center {
+            order: 1;
+        }
+        
+        .balance-left {
+            order: 2;
+        }
+        
+        .balance-right {
+            order: 3;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .balance-section {
+            padding: 60px 15px;
+        }
+        
+        .balance-image {
+            height: 300px;
+        }
+        
+        .balance-center h3 {
+            font-size: 1.8rem;
+        }
+        
+        .balance-center p {
+            font-size: 1rem;
+        }
+    }
+</style>
 
     <!-- Services Section -->
     <section id="services" class="dark">
