@@ -128,5 +128,10 @@ public class DoctorReviewService {
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }
+
+    // Get all reviews
+    public List<DoctorReview> getAllReviews() {
+        return reviewRepository.findAllByOrderByCreatedAtDesc();
+    }
 }
 

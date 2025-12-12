@@ -307,41 +307,323 @@
         
         .availability-section {
             background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(10, 61, 44, 0.1);
+            border: 1px solid rgba(46, 125, 90, 0.1);
+            transition: var(--transition);
         }
         
+        .availability-section:hover {
+            box-shadow: 0 12px 40px rgba(10, 61, 44, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .availability-section h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--ayur-dark-green);
+            font-size: 1.75rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .availability-section h3 i {
+            color: var(--ayur-accent-gold);
+            font-size: 1.5rem;
+        }
+        
+        /* Form Styling */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--ayur-dark-green);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-label::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, var(--ayur-accent-gold), var(--ayur-light-green));
+            border-radius: 2px;
+        }
+        
+        .form-select,
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: #fafbfc;
+            color: #2c3e50;
+            font-family: 'Nunito Sans', sans-serif;
+        }
+        
+        .form-select:focus,
+        .form-input:focus {
+            outline: none;
+            border-color: var(--ayur-light-green);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(46, 125, 90, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .form-select:hover,
+        .form-input:hover {
+            border-color: var(--ayur-teal);
+            background: white;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid rgba(46, 125, 90, 0.1);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-family: 'Nunito Sans', sans-serif;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--ayur-light-green), var(--ayur-teal));
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 90, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(46, 125, 90, 0.4);
+            background: linear-gradient(135deg, var(--ayur-teal), var(--ayur-light-green));
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-sm {
+            padding: 10px 18px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .btn-outline:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        /* Slot Items */
         .slot-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px;
-            background: #f8fafc;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #e5e7eb;
+            padding: 22px 25px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 2px solid #e5e7eb;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slot-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, var(--ayur-accent-gold), var(--ayur-light-green));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .slot-item:hover {
+            border-color: var(--ayur-light-green);
+            box-shadow: 0 8px 25px rgba(46, 125, 90, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .slot-item:hover::before {
+            transform: scaleY(1);
         }
         
         .slot-info {
             flex: 1;
+            padding-left: 15px;
         }
         
         .slot-info h4 {
-            margin: 0 0 5px;
-            font-size: 1rem;
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--ayur-dark-green);
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slot-info h4::before {
+            content: '📅';
+            font-size: 1.2rem;
         }
         
         .slot-info p {
             margin: 0;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .slot-info p::before {
+            content: '⏰';
+            font-size: 1rem;
         }
         
         .slot-actions {
             display: flex;
-            gap: 8px;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .badge-error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 18px 24px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 60px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-radius: 16px;
+            border: 2px dashed #d1d5db;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--ayur-teal);
+            opacity: 0.6;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .availability-section {
+                padding: 25px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .slot-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .slot-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
@@ -371,10 +653,6 @@
                 <i class="fas fa-prescription"></i>
                 <span>Prescriptions</span>
             </a>
-            <a href="${pageContext.request.contextPath}/doctor/health-records" class="nav-item">
-                <i class="fas fa-file-medical"></i>
-                <span>Health Records</span>
-            </a>
             <a href="${pageContext.request.contextPath}/doctor/reviews" class="nav-item">
                 <i class="fas fa-star"></i>
                 <span>Reviews</span>
@@ -382,14 +660,6 @@
             <a href="${pageContext.request.contextPath}/doctor/availability" class="nav-item active">
                 <i class="fas fa-clock"></i>
                 <span>Availability</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/doctor/packages" class="nav-item">
-                <i class="fas fa-box"></i>
-                <span>My Packages</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/doctor/bookings" class="nav-item">
-                <i class="fas fa-book-medical"></i>
-                <span>Package Bookings</span>
             </a>
         </nav>
         

@@ -37,8 +37,12 @@ import com.ayurveda.service.ConsultationService;
 import com.ayurveda.service.HospitalService;
 import com.ayurveda.service.OrderService;
 import com.ayurveda.service.ProductService;
+import com.ayurveda.service.ProductReviewService;
+import com.ayurveda.service.ReviewService;
 import com.ayurveda.service.RoomService;
 import com.ayurveda.service.UserService;
+import com.ayurveda.entity.Review;
+import com.ayurveda.entity.ProductReview;
 
 @Controller
 @RequestMapping("/user")
@@ -52,6 +56,8 @@ public class UserController {
     private final ProductService productService;
     private final BookingService bookingService;
     private final ConsultationService consultationService;
+    private final ReviewService reviewService;
+    private final ProductReviewService productReviewService;
 
     @Autowired
     public UserController(UserService userService,
@@ -61,7 +67,9 @@ public class UserController {
                          OrderService orderService,
                          ProductService productService,
                          BookingService bookingService,
-                         ConsultationService consultationService) {
+                         ConsultationService consultationService,
+                         ReviewService reviewService,
+                         ProductReviewService productReviewService) {
         this.userService = userService;
         this.hospitalService = hospitalService;
         this.roomService = roomService;
@@ -70,6 +78,8 @@ public class UserController {
         this.productService = productService;
         this.bookingService = bookingService;
         this.consultationService = consultationService;
+        this.reviewService = reviewService;
+        this.productReviewService = productReviewService;
     }
 
     // Helper method to get current user
@@ -592,6 +602,157 @@ public class UserController {
         model.addAttribute("consultation", consultation);
         
         return "user/dashboard/consultation-details";
+    }
+
+    // ========== REVIEW FORM ==========
+    @RequestMapping(value = "/review", method = RequestMethod.GET)
+    public String reviewForm(Authentication auth, Model model) {
+        User user = getCurrentUser(auth);
+        
+        // Get list of hospitals for dropdown
+        List<Hospital> hospitals = hospitalService.getAllHospitals();
+        
+        // Get list of products for dropdown
+        List<Product> products = productService.getAllProducts();
+        
+        model.addAttribute("user", user);
+        model.addAttribute("hospitals", hospitals);
+        model.addAttribute("products", products);
+        
+        return "user/dashboard/review-form";
+    }
+    
+    // ========== VIEW REVIEWS ==========
+    @RequestMapping(value = "/dashboard/reviews", method = RequestMethod.GET)
+    public String reviews(Authentication auth, Model model) {
+        User user = getCurrentUser(auth);
+        
+        // Get hospital reviews by user email
+        List<Review> hospitalReviews = reviewService.getReviewsByUserEmail(user.getEmail());
+        
+        // Get product reviews by user
+        List<ProductReview> productReviews = productReviewService.getUserReviews(user.getId());
+        
+        model.addAttribute("user", user);
+        model.addAttribute("hospitalReviews", hospitalReviews);
+        model.addAttribute("productReviews", productReviews);
+        
+        return "user/dashboard/reviews";
+    }
+
+    // ========== SUBMIT REVIEW ==========
+    @RequestMapping(value = "/review/submit", method = RequestMethod.GET)
+    public String showReviewForm(@RequestParam(required = false) String type,
+                                @RequestParam(required = false) Long id,
+                                Authentication auth,
+                                Model model) {
+        User user = getCurrentUser(auth);
+        model.addAttribute("user", user);
+        model.addAttribute("reviewType", type);
+        model.addAttribute("reviewId", id);
+        
+        if ("hospital".equals(type) && id != null) {
+            Hospital hospital = hospitalService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Hospital not found"));
+            model.addAttribute("hospital", hospital);
+            model.addAttribute("review", new Review());
+        } else if ("product".equals(type) && id != null) {
+            Product product = productService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            model.addAttribute("product", product);
+            model.addAttribute("review", new ProductReview());
+        }
+        
+        return "public/review-form";
+    }
+
+    @PostMapping("/review/hospital/{hospitalId}")
+    public String submitHospitalReview(@PathVariable Long hospitalId,
+                                      @RequestParam Integer rating,
+                                      @RequestParam String reviewText,
+                                      @RequestParam(required = false) String title,
+                                      @RequestParam(required = false) String treatmentTaken,
+                                      @RequestParam(required = false) Integer treatmentRating,
+                                      @RequestParam(required = false) Integer accommodationRating,
+                                      @RequestParam(required = false) Integer staffRating,
+                                      @RequestParam(required = false) Integer foodRating,
+                                      @RequestParam(required = false) Integer valueForMoneyRating,
+                                      Authentication auth,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            User user = getCurrentUser(auth);
+            Review review = new Review();
+            review.setRating(rating);
+            review.setReviewText(reviewText);
+            review.setTreatmentTaken(treatmentTaken);
+            review.setTreatmentRating(treatmentRating);
+            review.setAccommodationRating(accommodationRating);
+            review.setStaffRating(staffRating);
+            review.setFoodRating(foodRating);
+            review.setValueForMoneyRating(valueForMoneyRating);
+            review.setPatientName(user.getFullName());
+            review.setPatientEmail(user.getEmail());
+            review.setPatientCountry(user.getCountry() != null ? user.getCountry() : "");
+            
+            reviewService.createReview(hospitalId, review);
+            redirectAttributes.addFlashAttribute("success", "Review submitted successfully! It will be visible after moderation.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to submit review: " + e.getMessage());
+        }
+        return "redirect:/user/review";
+    }
+
+    @PostMapping("/review/product/{productId}")
+    public String submitProductReview(@PathVariable Long productId,
+                                     @RequestParam Integer rating,
+                                     @RequestParam String reviewText,
+                                     @RequestParam(required = false) String title,
+                                     @RequestParam(required = false) String pros,
+                                     @RequestParam(required = false) String cons,
+                                     @RequestParam(required = false) Boolean isRecommended,
+                                     @RequestParam(required = false) Long orderId,
+                                     Authentication auth,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User user = getCurrentUser(auth);
+            ProductReview review = new ProductReview();
+            review.setRating(rating);
+            review.setComment(reviewText);
+            review.setTitle(title);
+            review.setPros(pros);
+            review.setCons(cons);
+            review.setIsRecommended(isRecommended != null ? isRecommended : true);
+            
+            productReviewService.createReview(user, productId, review, orderId);
+            redirectAttributes.addFlashAttribute("success", "Review submitted successfully! It will be visible after moderation.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to submit review: " + e.getMessage());
+        }
+        return "redirect:/user/review";
+    }
+
+    // ========== WEBSITE REVIEW ==========
+    @PostMapping("/review/website")
+    public String submitWebsiteReview(@RequestParam Integer rating,
+                                     @RequestParam(required = false) String title,
+                                     @RequestParam String reviewText,
+                                     @RequestParam(required = false) String pros,
+                                     @RequestParam(required = false) String cons,
+                                     @RequestParam(required = false) Boolean isRecommended,
+                                     Authentication auth,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User user = getCurrentUser(auth);
+            
+            // For now, we'll create a general feedback entry
+            // You can create a WebsiteReview entity later if needed
+            // For now, we'll just show a success message
+            
+            redirectAttributes.addFlashAttribute("success", "Thank you for your feedback! Your review has been submitted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to submit review: " + e.getMessage());
+        }
+        return "redirect:/user/review";
     }
 }
 

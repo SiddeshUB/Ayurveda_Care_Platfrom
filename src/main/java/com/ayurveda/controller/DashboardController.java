@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,12 @@ import com.ayurveda.service.PackageService;
 import com.ayurveda.service.PhotoService;
 import com.ayurveda.service.ReviewService;
 import com.ayurveda.service.RoomService;
+import com.ayurveda.service.ProductService;
+import com.ayurveda.entity.Product;
+import com.ayurveda.repository.ProductRepository;
+import com.ayurveda.service.ProductCategoryService;
+import com.ayurveda.entity.ProductCategory;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -66,6 +73,8 @@ public class DashboardController {
     private final DoctorHospitalAssociationService associationService;
     private final RoomService roomService;
     private final UserEnquiryRepository enquiryRepository;
+    private final ProductRepository productRepository;
+    private final ProductCategoryService categoryService;
 
     @Autowired
     public DashboardController(HospitalService hospitalService,
@@ -77,7 +86,9 @@ public class DashboardController {
                               DocumentService documentService,
                               DoctorHospitalAssociationService associationService,
                               RoomService roomService,
-                              UserEnquiryRepository enquiryRepository) {
+                              UserEnquiryRepository enquiryRepository,
+                              ProductRepository productRepository,
+                              ProductCategoryService categoryService) {
         this.hospitalService = hospitalService;
         this.doctorService = doctorService;
         this.packageService = packageService;
@@ -88,6 +99,8 @@ public class DashboardController {
         this.associationService = associationService;
         this.roomService = roomService;
         this.enquiryRepository = enquiryRepository;
+        this.productRepository = productRepository;
+        this.categoryService = categoryService;
     }
 
     // Helper method to get current hospital
@@ -535,8 +548,106 @@ public class DashboardController {
     // ========== PRODUCT MANAGEMENT ==========
     // NOTE: Product management has been moved to VendorController (/vendor/products)
     // Products are now managed by Vendors, not Hospitals
-    // Hospitals manage: Packages, Rooms, Doctors
-    // Vendors manage: Products
+    // This route shows legacy products associated with the hospital (via hospitalId)
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
+    public String products(Authentication auth, Model model) {
+        Hospital hospital = getCurrentHospital(auth);
+        
+        // Find products by legacy hospitalId field
+        // Since there's no direct repository method, we'll query all and filter
+        // In production, consider adding a custom query method
+        List<Product> products = new ArrayList<>();
+        try {
+            products = productRepository.findAll().stream()
+                    .filter(p -> p != null && p.getHospitalId() != null && p.getHospitalId().equals(hospital.getId()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            // Log error but continue with empty list
+            System.err.println("Error fetching products for hospital " + hospital.getId() + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        model.addAttribute("hospital", hospital);
+        model.addAttribute("products", products != null ? products : new ArrayList<>());
+        
+        return "dashboard/products";
+    }
+
+    // Show add product form
+    @RequestMapping(value = "/products/add", method = RequestMethod.GET)
+    public String showAddProductForm(Authentication auth, Model model) {
+        Hospital hospital = getCurrentHospital(auth);
+        List<ProductCategory> categories = categoryService.findActiveCategories();
+        
+        model.addAttribute("hospital", hospital);
+        model.addAttribute("categories", categories);
+        model.addAttribute("product", new Product()); // Empty product for new form
+        
+        return "dashboard/product-form";
+    }
+
+    // Handle add product form submission
+    @PostMapping("/products/add")
+    public String addProduct(@ModelAttribute Product product,
+                           @RequestParam(required = false) Long categoryId,
+                           @RequestParam(required = false) MultipartFile image,
+                           Authentication auth,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            Hospital hospital = getCurrentHospital(auth);
+            
+            // Set category if provided
+            if (categoryId != null && categoryId > 0) {
+                ProductCategory category = categoryService.findById(categoryId)
+                        .orElseThrow(() -> new RuntimeException("Category not found"));
+                product.setCategory(category);
+            }
+            
+            // Set hospitalId (legacy field)
+            product.setHospitalId(hospital.getId());
+            
+            // Set default values
+            if (product.getIsActive() == null) {
+                product.setIsActive(true);
+            }
+            if (product.getIsAvailable() == null) {
+                product.setIsAvailable(true);
+            }
+            if (product.getCreatedAt() == null) {
+                product.setCreatedAt(LocalDateTime.now());
+            }
+            product.setUpdatedAt(LocalDateTime.now());
+            
+            // Generate SKU if not provided
+            if (product.getSku() == null || product.getSku().isEmpty()) {
+                String sku = "HOSP-" + hospital.getId() + "-" + System.currentTimeMillis();
+                product.setSku(sku);
+            }
+            
+            // Generate slug if not provided
+            if (product.getSlug() == null || product.getSlug().isEmpty()) {
+                String slug = product.getProductName().toLowerCase()
+                        .replaceAll("[^a-z0-9]+", "-")
+                        .replaceAll("^-|-$", "");
+                product.setSlug(slug);
+            }
+            
+            // Save product
+            Product savedProduct = productRepository.save(product);
+            
+            // TODO: Handle image upload if needed
+            // For now, image upload would need to be handled separately
+            
+            redirectAttributes.addFlashAttribute("success", "Product added successfully!");
+            return "redirect:/dashboard/products";
+            
+        } catch (Exception e) {
+            System.err.println("Error adding product: " + e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Failed to add product: " + e.getMessage());
+            return "redirect:/dashboard/products/add";
+        }
+    }
 
     // ========== DOCTOR MANAGEMENT ==========
     @RequestMapping(value = "/doctors", method = RequestMethod.GET)

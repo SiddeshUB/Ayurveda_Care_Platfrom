@@ -26,4 +26,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     
     @Query("SELECT r FROM Review r WHERE r.hospital.id = :hospitalId AND r.isFeatured = true AND r.isVisible = true ORDER BY r.createdAt DESC")
     List<Review> findFeaturedReviews(@Param("hospitalId") Long hospitalId);
+    
+    List<Review> findByPatientEmailOrderByCreatedAtDesc(String patientEmail);
+    
+    List<Review> findAllByOrderByCreatedAtDesc();
 }

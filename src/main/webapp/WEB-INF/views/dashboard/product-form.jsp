@@ -37,10 +37,6 @@
                 <i class="fas fa-box"></i>
                 <span>Packages</span>
             </a>
-            <a href="${pageContext.request.contextPath}/dashboard/products" class="nav-item active">
-                <i class="fas fa-shopping-bag"></i>
-                <span>Products</span>
-            </a>
             <a href="${pageContext.request.contextPath}/dashboard/doctors" class="nav-item">
                 <i class="fas fa-user-md"></i>
                 <span>Doctors</span>
@@ -120,10 +116,10 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label required">Category</label>
-                            <select name="category" class="form-select" required>
+                            <select name="categoryId" class="form-select" required>
                                 <option value="">Select category...</option>
                                 <c:forEach var="cat" items="${categories}">
-                                    <option value="${cat}" ${product.category == cat ? 'selected' : ''}>${cat.displayName}</option>
+                                    <option value="${cat.id}" ${product.category != null && product.category.id == cat.id ? 'selected' : ''}>${cat.displayName}</option>
                                 </c:forEach>
                             </select>
                         </div>
@@ -165,8 +161,8 @@
                     
                     <div class="form-group">
                         <label class="form-label">Original Price / MRP (₹)</label>
-                        <input type="number" name="originalPrice" class="form-input" 
-                               value="${product.originalPrice}" placeholder="MRP (optional)" min="0" step="0.01">
+                        <input type="number" name="mrp" class="form-input" 
+                               value="${product.mrp}" placeholder="MRP (optional)" min="0" step="0.01">
                         <small style="color: var(--text-muted);">Set if different from regular price</small>
                     </div>
                     

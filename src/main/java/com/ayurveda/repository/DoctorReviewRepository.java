@@ -28,5 +28,7 @@ public interface DoctorReviewRepository extends JpaRepository<DoctorReview, Long
     
     @Query("SELECT COUNT(r) FROM DoctorReview r WHERE r.doctor.id = :doctorId AND r.rating = :rating AND r.status = 'APPROVED'")
     Long getRatingCountByDoctorIdAndRating(@Param("doctorId") Long doctorId, @Param("rating") Integer rating);
+    
+    List<DoctorReview> findAllByOrderByCreatedAtDesc();
 }
 

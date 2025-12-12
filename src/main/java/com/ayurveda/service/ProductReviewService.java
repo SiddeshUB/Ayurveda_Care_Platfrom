@@ -118,6 +118,10 @@ public class ProductReviewService {
     public List<ProductReview> getProductReviews(Long productId) {
         return reviewRepository.findByProductIdAndStatusOrderByCreatedAtDesc(productId, ReviewStatus.APPROVED);
     }
+    
+    public List<ProductReview> getAllProductReviewsByProduct(Long productId) {
+        return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId);
+    }
 
     public Page<ProductReview> getProductReviews(Long productId, Pageable pageable) {
         return reviewRepository.findByProductIdAndStatus(productId, ReviewStatus.APPROVED, pageable);
@@ -130,6 +134,10 @@ public class ProductReviewService {
 
     public List<ProductReview> getUserReviews(Long userId) {
         return reviewRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+    
+    public List<ProductReview> getAllProductReviews() {
+        return reviewRepository.findAllByOrderByCreatedAtDesc();
     }
 
     public Optional<ProductReview> getUserReviewForProduct(Long productId, Long userId) {

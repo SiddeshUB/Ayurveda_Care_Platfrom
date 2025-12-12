@@ -19,6 +19,10 @@
             </a>
         </div>
         <nav class="sidebar-nav">
+            <a href="${pageContext.request.contextPath}/" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
             <a href="${pageContext.request.contextPath}/doctor/treatments" class="nav-item active">
                 <i class="fas fa-spa"></i>
                 <span>Treatments</span>

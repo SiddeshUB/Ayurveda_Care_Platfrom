@@ -87,6 +87,7 @@ public class WebConfig implements WebMvcConfigurer {
             registry.addResourceHandler("/js/**")
                     .addResourceLocations("classpath:/static/js/", "/js/");
         }
+<<<<<<< HEAD
        
         // Serve static images - use ServletContext path (works in Tomcat)
         registry.addResourceHandler("/images/**")
@@ -111,6 +112,9 @@ public class WebConfig implements WebMvcConfigurer {
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
         String uploadAbsolutePath = uploadPath.toUri().toString();
 
+=======
+        
+>>>>>>> f35eeb549dc1548c658fa5b733beef1b3305e289
         
         // Serve uploaded files - use external directory for Tomcat
         registry.addResourceHandler("/uploads/**")

@@ -1076,10 +1076,6 @@
                 <i class="fas fa-prescription"></i>
                 <span>Prescriptions</span>
             </a>
-            <a href="${pageContext.request.contextPath}/doctor/health-records" class="nav-item">
-                <i class="fas fa-file-medical"></i>
-                <span>Health Records</span>
-            </a>
             <a href="${pageContext.request.contextPath}/doctor/reviews" class="nav-item">
                 <i class="fas fa-star"></i>
                 <span>Reviews</span>
@@ -1087,14 +1083,6 @@
             <a href="${pageContext.request.contextPath}/doctor/availability" class="nav-item">
                 <i class="fas fa-clock"></i>
                 <span>Availability</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/doctor/packages" class="nav-item">
-                <i class="fas fa-box"></i>
-                <span>My Packages</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/doctor/bookings" class="nav-item">
-                <i class="fas fa-book-medical"></i>
-                <span>Package Bookings</span>
             </a>
         </nav>
         
@@ -1196,108 +1184,6 @@
                 </div>
             </div>
 
-            <!-- My Packages Section -->
-            <c:if test="${not empty packages}">
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-spa"></i> My Ayurvedic Packages</h3>
-                        <a href="${pageContext.request.contextPath}/doctor/packages" class="view-all">
-                            View All <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <div class="booking-list">
-                            <c:forEach var="pkg" items="${packages}" end="4">
-                                <div class="booking-item">
-                                    <div class="booking-avatar" style="background: linear-gradient(135deg, var(--ayur-olive), var(--ayur-moss));">
-                                        <i class="fas fa-spa"></i>
-                                    </div>
-                                    <div class="booking-info" style="flex: 1;">
-                                        <h4>${pkg.packageName}</h4>
-                                        <p style="color: var(--ayur-medium-green); margin-top: 5px; font-weight: 600;">
-                                            <c:choose>
-                                                <c:when test="${pkg.packageType == 'OTHERS'}">
-                                                    ${pkg.customType != null ? pkg.customType : 'Custom Ayurvedic Package'}
-                                                </c:when>
-                                                <c:otherwise>
-                                                    ${fn:replace(pkg.packageType, '_', ' ')}
-                                                </c:otherwise>
-                                            </c:choose>
-                                            <c:if test="${pkg.durationDays != null}">
-                                                • ${pkg.durationDays} Days
-                                            </c:if>
-                                        </p>
-                                        <p style="color: #777; font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                                            <i class="fas fa-hospital-alt" style="color: var(--ayur-teal);"></i> 
-                                            <span>${pkg.hospital.centerName}</span>
-                                        </p>
-                                    </div>
-                                    <div class="booking-meta">
-                                        <span class="badge ${pkg.isActive ? 'badge-success' : 'badge-error'}">
-                                            ${pkg.isActive ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </div>
-            </c:if>
-
-            <!-- Package Bookings Section -->
-            <c:if test="${not empty packageBookings}">
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-book-medical"></i> Package Bookings</h3>
-                        <a href="${pageContext.request.contextPath}/doctor/bookings" class="view-all">
-                            View All <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <div class="booking-list">
-                            <c:forEach var="booking" items="${packageBookings}" end="4">
-                                <div class="booking-item">
-                                    <div class="booking-avatar">
-                                        <i class="fas fa-user-injured"></i>
-                                    </div>
-                                    <div class="booking-info" style="flex: 1;">
-                                        <h4>${booking.patientName}</h4>
-                                        <p style="color: var(--ayur-medium-green); margin-top: 5px; font-weight: 600;">
-                                            <i class="fas fa-spa"></i> ${booking.treatmentPackage.packageName}
-                                            <c:if test="${booking.roomType != null}">
-                                                • ${fn:replace(booking.roomType, '_', ' ')} Room
-                                            </c:if>
-                                        </p>
-                                        <p style="color: #777; font-size: 0.9rem; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                                            <i class="fas fa-calendar" style="color: var(--ayur-teal);"></i> 
-                                            <c:choose>
-                                                <c:when test="${booking.checkInDate != null && booking.checkOutDate != null}">
-                                                    <fmt:parseDate value="${booking.checkInDate}" pattern="yyyy-MM-dd" var="parsedCheckInDate" type="date"/>
-                                                    <fmt:formatDate value="${parsedCheckInDate}" pattern="dd MMM yyyy"/> - 
-                                                    <fmt:parseDate value="${booking.checkOutDate}" pattern="yyyy-MM-dd" var="parsedCheckOutDate" type="date"/>
-                                                    <fmt:formatDate value="${parsedCheckOutDate}" pattern="dd MMM yyyy"/>
-                                                </c:when>
-                                                <c:when test="${booking.checkInDate != null}">
-                                                    <fmt:parseDate value="${booking.checkInDate}" pattern="yyyy-MM-dd" var="parsedCheckInDateOnly" type="date"/>
-                                                    <fmt:formatDate value="${parsedCheckInDateOnly}" pattern="dd MMM yyyy"/>
-                                                </c:when>
-                                            </c:choose>
-                                            <c:if test="${booking.totalAmount != null}">
-                                                • <i class="fas fa-rupee-sign" style="color: var(--ayur-spice);"></i> <fmt:formatNumber value="${booking.totalAmount}" maxFractionDigits="0"/>
-                                            </c:if>
-                                        </p>
-                                    </div>
-                                    <div class="booking-meta">
-                                        <span class="badge ${booking.status == 'CONFIRMED' ? 'badge-success' : (booking.status == 'PENDING' ? 'badge-warning' : 'badge-error')}">
-                                            ${booking.status}
-                                        </span>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </div>
-            </c:if>
 
             <!-- Today's Appointments -->
             <c:if test="${not empty todayAppointments}">

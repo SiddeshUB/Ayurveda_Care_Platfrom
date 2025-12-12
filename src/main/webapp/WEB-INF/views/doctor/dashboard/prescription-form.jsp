@@ -572,10 +572,6 @@
                 <i class="fas fa-prescription"></i>
                 <span>Prescriptions</span>
             </a>
-            <a href="${pageContext.request.contextPath}/doctor/health-records" class="nav-item">
-                <i class="fas fa-file-medical"></i>
-                <span>Health Records</span>
-            </a>
             <a href="${pageContext.request.contextPath}/doctor/reviews" class="nav-item">
                 <i class="fas fa-star"></i>
                 <span>Reviews</span>
@@ -583,14 +579,6 @@
             <a href="${pageContext.request.contextPath}/doctor/availability" class="nav-item">
                 <i class="fas fa-clock"></i>
                 <span>Availability</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/doctor/packages" class="nav-item">
-                <i class="fas fa-box"></i>
-                <span>My Packages</span>
-            </a>
-            <a href="${pageContext.request.contextPath}/doctor/bookings" class="nav-item">
-                <i class="fas fa-book-medical"></i>
-                <span>Package Bookings</span>
             </a>
         </nav>
         

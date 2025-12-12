@@ -120,4 +120,12 @@ public class ReviewService {
         
         hospitalRepository.save(hospital);
     }
+
+    public List<Review> getReviewsByUserEmail(String email) {
+        return reviewRepository.findByPatientEmailOrderByCreatedAtDesc(email);
+    }
+
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAllByOrderByCreatedAtDesc();
+    }
 }

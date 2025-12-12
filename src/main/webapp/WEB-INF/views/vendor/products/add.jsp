@@ -32,6 +32,9 @@
         .image-upload-area { border: 2px dashed #ddd; border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
         .image-upload-area:hover { border-color: var(--primary); background: #f8fff8; }
         .image-upload-area i { font-size: 3rem; color: #ccc; margin-bottom: 15px; }
+        .preview-item { position: relative; margin-bottom: 10px; }
+        .preview-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+        .preview-item .remove-btn { position: absolute; top: 5px; right: 5px; }
         .required { color: red; }
         #customCategoryDiv { display: none; }
     </style>
@@ -215,23 +218,22 @@
 
                 <!-- Right Column -->
                 <div class="col-lg-4">
-                    <!-- Product Image -->
+                    <!-- Product Images -->
                     <div class="card">
                         <div class="card-header">
-                            <i class="fas fa-image me-2"></i>Product Image
+                            <i class="fas fa-images me-2"></i>Product Images
                         </div>
                         <div class="card-body">
-                            <div class="image-upload-area" onclick="document.getElementById('productImage').click()">
+                            <div class="image-upload-area" onclick="document.getElementById('productImages').click()">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                <p class="mb-0">Click to upload image</p>
-                                <small class="text-muted">JPG, PNG up to 5MB</small>
+                                <p class="mb-0">Click to upload images</p>
+                                <small class="text-muted">JPG, PNG up to 5MB each (Multiple images allowed)</small>
                             </div>
-                            <input type="file" id="productImage" name="image" accept="image/*" class="d-none" onchange="previewImage(this)">
-                            <div id="imagePreview" class="mt-3 text-center" style="display: none;">
-                                <img id="preview" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
-                                <br>
-                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearImage()">
-                                    <i class="fas fa-times me-1"></i>Remove
+                            <input type="file" id="productImages" name="imageFiles" accept="image/*" class="d-none" multiple onchange="previewImages(this)">
+                            <div id="imagesPreview" class="mt-3" style="display: none;">
+                                <div id="previewContainer" class="row g-2"></div>
+                                <button type="button" class="btn btn-sm btn-outline-danger mt-2 w-100" onclick="clearImages()">
+                                    <i class="fas fa-times me-1"></i>Clear All
                                 </button>
                             </div>
                         </div>
@@ -290,24 +292,112 @@
             }
         });
 
-        // Image preview
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
+        // Store all selected files
+        let allSelectedFiles = [];
+        
+        // Multiple images preview
+        function previewImages(input) {
+            if (input.files && input.files.length > 0) {
+                // Show preview area (keep upload area visible)
+                document.getElementById('imagesPreview').style.display = 'block';
+                
+                // Get currently selected files from input
+                const currentFiles = Array.from(input.files);
+                
+                // Only add files that don't already exist in our array
+                // Compare by name, size, and lastModified to ensure uniqueness
+                currentFiles.forEach(newFile => {
+                    const exists = allSelectedFiles.some(existing => 
+                        existing.name === newFile.name && 
+                        existing.size === newFile.size &&
+                        existing.lastModified === newFile.lastModified
+                    );
+                    if (!exists) {
+                        allSelectedFiles.push(newFile);
+                    }
+                });
+                
+                // Reset input value so next selection is fresh
+                input.value = '';
+                
+                // Re-render all previews
+                renderPreviews();
+                
+                // Update the hidden input for form submission
+                updateFileInput();
+            }
+        }
+        
+        // Update the actual file input with all selected files for form submission
+        function updateFileInput() {
+            const input = document.getElementById('productImages');
+            const dt = new DataTransfer();
+            allSelectedFiles.forEach(file => {
+                dt.items.add(file);
+            });
+            input.files = dt.files;
+        }
+        
+        function renderPreviews() {
+            const container = document.getElementById('previewContainer');
+            container.innerHTML = '';
+            
+            allSelectedFiles.forEach((file, index) => {
                 const reader = new FileReader();
+                
                 reader.onload = function(e) {
-                    document.getElementById('preview').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                    document.querySelector('.image-upload-area').style.display = 'none';
-                }
-                reader.readAsDataURL(input.files[0]);
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-4';
+                    
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Preview ' + (index + 1);
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn btn-sm btn-danger remove-btn';
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    removeBtn.onclick = function() {
+                        removeImage(index);
+                    };
+                    
+                    previewItem.appendChild(img);
+                    previewItem.appendChild(removeBtn);
+                    col.appendChild(previewItem);
+                    container.appendChild(col);
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeImage(index) {
+            // Remove from array
+            allSelectedFiles.splice(index, 1);
+            
+            // Re-render
+            if (allSelectedFiles.length === 0) {
+                clearImages();
+            } else {
+                renderPreviews();
+                updateFileInput();
             }
         }
 
-        function clearImage() {
-            document.getElementById('productImage').value = '';
-            document.getElementById('imagePreview').style.display = 'none';
-            document.querySelector('.image-upload-area').style.display = 'block';
+        function clearImages() {
+            document.getElementById('productImages').value = '';
+            document.getElementById('imagesPreview').style.display = 'none';
+            document.getElementById('previewContainer').innerHTML = '';
+            allSelectedFiles = [];
         }
+        
+        // Ensure file input is updated before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            updateFileInput();
+        });
     </script>
 </body>
 </html>

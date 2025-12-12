@@ -41,7 +41,13 @@ public class AdminController {
     private ProductCategoryService categoryService;
     
     @Autowired
-    private ProductReviewService reviewService;
+    private ProductReviewService productReviewService;
+    
+    @Autowired
+    private com.ayurveda.service.ReviewService hospitalReviewService;
+    
+    @Autowired
+    private com.ayurveda.service.DoctorReviewService doctorReviewService;
 
     @Autowired
     public AdminController(AdminService adminService) {
@@ -590,16 +596,136 @@ public class AdminController {
     // ========== REVIEW MODERATION ==========
     
     @RequestMapping(value = "/reviews", method = RequestMethod.GET)
-    public String allReviews(@RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "20") int size,
-                            Model model) {
+    public String allReviews(Model model) {
         Admin admin = getCurrentAdmin();
         
+        // Get all reviews
+        List<com.ayurveda.entity.DoctorReview> allDoctorReviews = doctorReviewService.getAllReviews();
+        List<com.ayurveda.entity.Review> allHospitalReviews = hospitalReviewService.getAllReviews();
+        List<com.ayurveda.entity.ProductReview> allProductReviews = productReviewService.getAllProductReviews();
+        
+        // Group doctor reviews by doctor
+        Map<Long, List<com.ayurveda.entity.DoctorReview>> reviewsByDoctor = allDoctorReviews.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                    review -> review.getDoctor().getId()
+                ));
+        
+        // Group hospital reviews by hospital
+        Map<Long, List<com.ayurveda.entity.Review>> reviewsByHospital = allHospitalReviews.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                    review -> review.getHospital().getId()
+                ));
+        
+        // Group product reviews by product
+        Map<Long, List<com.ayurveda.entity.ProductReview>> reviewsByProduct = allProductReviews.stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                    review -> review.getProduct().getId()
+                ));
+        
+        // Get doctor info map
+        Map<Long, com.ayurveda.entity.Doctor> doctorMap = new java.util.HashMap<>();
+        for (Long doctorId : reviewsByDoctor.keySet()) {
+            adminService.getDoctorById(doctorId).ifPresent(doctor -> doctorMap.put(doctorId, doctor));
+        }
+        
+        // Get hospital info map
+        Map<Long, com.ayurveda.entity.Hospital> hospitalMap = new java.util.HashMap<>();
+        for (Long hospitalId : reviewsByHospital.keySet()) {
+            adminService.getHospitalById(hospitalId).ifPresent(hospital -> hospitalMap.put(hospitalId, hospital));
+        }
+        
+        // Get product info map
+        Map<Long, com.ayurveda.entity.Product> productMap = new java.util.HashMap<>();
+        for (Long productId : reviewsByProduct.keySet()) {
+            adminService.getProductById(productId).ifPresent(product -> productMap.put(productId, product));
+        }
+        
         model.addAttribute("admin", admin);
-        model.addAttribute("pendingCount", reviewService.countPendingReviews());
         model.addAttribute("stats", adminService.getEnhancedDashboardStats());
+        model.addAttribute("reviewsByDoctor", reviewsByDoctor);
+        model.addAttribute("reviewsByHospital", reviewsByHospital);
+        model.addAttribute("reviewsByProduct", reviewsByProduct);
+        model.addAttribute("doctorMap", doctorMap);
+        model.addAttribute("hospitalMap", hospitalMap);
+        model.addAttribute("productMap", productMap);
+        model.addAttribute("totalDoctorReviews", allDoctorReviews.size());
+        model.addAttribute("totalHospitalReviews", allHospitalReviews.size());
+        model.addAttribute("totalProductReviews", allProductReviews.size());
         
         return "admin/dashboard/reviews";
+    }
+    
+    @RequestMapping(value = "/reviews/doctor/{doctorId}", method = RequestMethod.GET)
+    public String doctorReviews(@PathVariable Long doctorId, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Admin admin = getCurrentAdmin();
+            
+            List<com.ayurveda.entity.DoctorReview> reviews = doctorReviewService.getReviewsByDoctor(doctorId);
+            Optional<com.ayurveda.entity.Doctor> doctorOpt = adminService.getDoctorById(doctorId);
+            
+            if (!doctorOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Doctor not found");
+                return "redirect:/admin/reviews";
+            }
+            
+            model.addAttribute("admin", admin);
+            model.addAttribute("doctor", doctorOpt.get());
+            model.addAttribute("reviews", reviews);
+            
+            return "admin/dashboard/doctor-reviews";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error loading doctor reviews: " + e.getMessage());
+            return "redirect:/admin/reviews";
+        }
+    }
+    
+    @RequestMapping(value = "/reviews/hospital/{hospitalId}", method = RequestMethod.GET)
+    public String hospitalReviews(@PathVariable Long hospitalId, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Admin admin = getCurrentAdmin();
+            
+            List<com.ayurveda.entity.Review> reviews = hospitalReviewService.getReviewsByHospital(hospitalId);
+            Optional<com.ayurveda.entity.Hospital> hospitalOpt = adminService.getHospitalById(hospitalId);
+            
+            if (!hospitalOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Hospital not found");
+                return "redirect:/admin/reviews";
+            }
+            
+            model.addAttribute("admin", admin);
+            model.addAttribute("hospital", hospitalOpt.get());
+            model.addAttribute("reviews", reviews);
+            
+            return "admin/dashboard/hospital-reviews";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error loading hospital reviews: " + e.getMessage());
+            return "redirect:/admin/reviews";
+        }
+    }
+    
+    @RequestMapping(value = "/reviews/product/{productId}", method = RequestMethod.GET)
+    public String productReviews(@PathVariable Long productId, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Admin admin = getCurrentAdmin();
+            
+            // Get all reviews for admin view (not just approved)
+            List<com.ayurveda.entity.ProductReview> reviews = productReviewService.getAllProductReviewsByProduct(productId);
+            Optional<com.ayurveda.entity.Product> productOpt = adminService.getProductById(productId);
+            
+            if (!productOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Product not found");
+                return "redirect:/admin/reviews";
+            }
+            
+            model.addAttribute("admin", admin);
+            model.addAttribute("product", productOpt.get());
+            model.addAttribute("reviews", reviews);
+            
+            return "admin/dashboard/product-reviews";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error loading product reviews: " + e.getMessage());
+            return "redirect:/admin/reviews";
+        }
     }
     
     @PostMapping("/reviews/{id}/approve")
@@ -607,7 +733,7 @@ public class AdminController {
         try {
             Admin admin = getCurrentAdmin();
             String adminId = admin != null ? admin.getEmail() : "admin";
-            reviewService.approveReview(id, adminId);
+            productReviewService.approveReview(id, adminId);
             redirectAttributes.addFlashAttribute("success", "Review approved!");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -622,7 +748,7 @@ public class AdminController {
         try {
             Admin admin = getCurrentAdmin();
             String adminId = admin != null ? admin.getEmail() : "admin";
-            reviewService.rejectReview(id, reason, adminId);
+            productReviewService.rejectReview(id, reason, adminId);
             redirectAttributes.addFlashAttribute("success", "Review rejected.");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
