@@ -153,7 +153,7 @@
         }
         
         .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(201, 162, 39, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-image: url("${pageContext.request.contextPath}/images/page.jpg") center/cover no-repeat;
         }
         
         /* User Dropdown */
@@ -196,21 +196,24 @@
         /* ========== PAGE HERO ========== */
         .page-hero {
             background: linear-gradient(135deg, rgba(10, 15, 10, 0.9) 0%, rgba(26, 46, 26, 0.85) 100%),
-                        url('https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=1920') center/cover;
+                         url("${pageContext.request.contextPath}/images/ayu1.jpg") center/cover no-repeat;
             padding: 180px 0 100px;
             text-align: center;
             position: relative;
         }
         
-        .page-hero::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 150px;
-            background: linear-gradient(to top, var(--bg-cream), transparent);
-        }
+       .page-hero::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, rgba(10,15,10,1), transparent);
+}
+
+
+
         
         .page-hero-badge {
             display: inline-block;
@@ -818,7 +821,7 @@
                         <a class="nav-link" href="${pageContext.request.contextPath}/doctors">Find Doctors</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/products"><i class="fas fa-shopping-bag me-1"></i>Products</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/products"></i>Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.request.contextPath}/about">About Us</a>
