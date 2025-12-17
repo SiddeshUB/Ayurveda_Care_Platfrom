@@ -19,11 +19,19 @@
             --cream: #faf8f5;
         }
         
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--cream);
-        }
-        
+      body {
+    font-family: 'Poppins', sans-serif;
+    background:
+        linear-gradient(rgba(250, 248, 245, 0.92), rgba(250, 248, 245, 0.92)),
+        url('${pageContext.request.contextPath}/images/ayu.jpg')
+        center / cover no-repeat fixed;
+}
+section {
+    background: transparent;
+}
+
+
+
         h1, h2, h3, h4, h5 {
             font-family: 'Playfair Display', serif;
         }
@@ -87,13 +95,18 @@
         }
         
         /* Hero Banner */
-        .shop-hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 60px 0;
-            text-align: center;
-        }
+       .shop-hero {
+    position: relative;
+    margin-top: 80px;
+    padding: 90px 0;
+    text-align: center;
+    color: white;
+    background:
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+         url("${pageContext.request.contextPath}/views/images/ayu.jpg") center/cover no-repeat;
         
+}
+
         .shop-hero h1 {
             font-size: 2.5rem;
             margin-bottom: 15px;
@@ -319,6 +332,7 @@
             margin-left: 8px;
         }
         
+        
         .add-to-cart {
             background: var(--primary);
             color: white;
@@ -447,7 +461,7 @@
                         <a class="nav-link" href="${pageContext.request.contextPath}/doctors" style="color: #fff !important;">Find Doctors</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="${pageContext.request.contextPath}/products" style="color: #c9a227 !important;"><i class="fas fa-shopping-bag me-1"></i>Products</a>
+                        <a class="nav-link active" href="${pageContext.request.contextPath}/products" style="color: #c9a227 !important;"></i>Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.request.contextPath}/about" style="color: #fff !important;">About Us</a>
@@ -506,10 +520,82 @@
     </nav>
 
     <!-- Hero Banner -->
-    <section class="shop-hero" style="margin-top: 80px;">
+    <!-- Hero Banner -->
+<section class="shop-hero"
+    style="
+        margin-top: 80px;
+        background: 
+            linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+            url('${pageContext.request.contextPath}/views/images/Screenshot 2025-12-15 124242.png') center center / cover no-repeat;
+    ">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 mb-3">Gifts for Winter Wellness</h1>
+                <p class="lead mb-4" style="font-size: 1.25rem; color: rgba(255,255,255,0.9);">
+                    20% Off Orders of $75+
+                </p>
+                <a href="${pageContext.request.contextPath}/products?category=winter-wellness" 
+                   class="btn btn-lg" 
+                   style="
+                       background: linear-gradient(135deg, #c9a227 0%, #e6b55c 100%); 
+                       color: #1a2e1a !important; 
+                       padding: 12px 40px !important; 
+                       border-radius: 30px; 
+                       font-weight: 600;
+                       font-size: 1.1rem;
+                   ">
+                    SHOP THE SALE
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- Promotional Banner with Background Image -->
+    <section class="py-5" style="margin-top: 20px;">
         <div class="container">
-            <h1>Ayurvedic Products</h1>
-            <p class="mb-0 opacity-75">Discover authentic Ayurvedic products for your wellness journey</p>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="rounded-4 overflow-hidden shadow-lg position-relative" style="
+                        background: linear-gradient(rgba(45, 90, 39, 0.85), rgba(30, 61, 26, 0.9)), 
+                                    url('https://images.unsplash.com/photo-1542884748-6a3f4c9c9e3d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+                        border: 1px solid rgba(201, 162, 39, 0.3);
+                        min-height: 180px;
+                    ">
+                        <div class="row align-items-center h-100">
+                            <div class="col-md-8 p-4 p-md-5">
+                                <h3 class="mb-2" style="color: white; font-weight: 700; font-size: 1.8rem; font-family: 'Playfair Display', serif;">
+                                    Gifts for Winter Wellness
+                                </h3>
+                                <p class="mb-0" style="color: rgba(255, 255, 255, 0.95); font-size: 1.2rem; font-weight: 500;">
+                                    20% Off Orders of $75+
+                                </p>
+                            </div>
+                            <div class="col-md-4 p-4 p-md-5 text-center text-md-end">
+                                <a href="${pageContext.request.contextPath}/products?promo=winter20" 
+                                   class="btn px-4 py-3 rounded-pill shadow" 
+                                   style="
+                                       background: #c9a227;
+                                       color: #1a2e1a;
+                                       font-weight: 700;
+                                       border: none;
+                                       font-size: 1.1rem;
+                                       transition: all 0.3s ease;
+                                   "
+                                   onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 25px rgba(201, 162, 39, 0.4)';"
+                                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)';">
+                                    SHOP THE SALE
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Decorative leaf icon overlay -->
+                        <div class="position-absolute top-0 end-0 opacity-10" style="font-size: 150px; transform: rotate(45deg); margin-top: -30px; margin-right: -30px;">
+                            <i class="fas fa-leaf" style="color: #c9a227;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1114,4 +1200,3 @@
     </script>
 </body>
 </html>
-

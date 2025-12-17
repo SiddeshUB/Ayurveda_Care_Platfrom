@@ -374,7 +374,7 @@
                     <a class="nav-link" href="${pageContext.request.contextPath}/doctors">Find Doctors</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/products"><i class="fas fa-shopping-bag me-1"></i>Products</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/products"></i>Products</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/about">About Us</a>

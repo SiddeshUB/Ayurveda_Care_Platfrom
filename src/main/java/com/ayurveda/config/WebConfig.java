@@ -108,9 +108,20 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("/images/", "classpath:/META-INF/resources/images/")
                 .resourceChain(true); // Enable resource chain for better performance
         
-        // Note: /uploads/** is handled by UploadController, not resource handler
-        // This allows the controller to have more sophisticated file location logic
-        // (checking multiple paths, handling Tomcat external directories, etc.)
+
+        // Serve uploaded files - use absolute path
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+        String uploadAbsolutePath = uploadPath.toUri().toString();
+
+
+        
+
+        
+        // Serve uploaded files - use external directory for Tomcat
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(uploadAbsolutePath)
+                .setCachePeriod(3600);
+
         
         // Also serve from classpath if needed
         registry.addResourceHandler("/webjars/**")

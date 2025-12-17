@@ -197,21 +197,30 @@
         /* ========== PAGE HERO ========== */
         .page-hero {
             background: linear-gradient(135deg, rgba(10, 15, 10, 0.9) 0%, rgba(26, 46, 26, 0.85) 100%),
-                        url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920') center/cover;
+                      url('https://images.unsplash.com/photo-1600508774634-4e11d34730e2?auto=format&fit=crop&w=1920&q=85')
+
+ center/cover;
+
+ center/cover;
             padding: 180px 0 100px;
             text-align: center;
             position: relative;
         }
         
-        .page-hero::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 150px;
-            background: linear-gradient(to top, var(--bg-cream), transparent);
-        }
+       .page-hero::before {
+    background: linear-gradient(to top, var(--bg-cream), transparent);
+}
+/* FIX: Dark fade instead of white */
+.page-hero::before {
+    background: linear-gradient(
+        to top,
+        #0a0f0a 0%,
+        rgba(10, 15, 10, 0.95) 30%,
+        rgba(10, 15, 10, 0.6) 60%,
+        transparent 100%
+    );
+}
+
         
         .page-hero-badge {
             display: inline-block;
@@ -909,7 +918,7 @@
                         <a class="nav-link active" href="${pageContext.request.contextPath}/doctors">Find Doctors</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/products"><i class="fas fa-shopping-bag me-1"></i>Products</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/products"></i>Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.request.contextPath}/about">About Us</a>

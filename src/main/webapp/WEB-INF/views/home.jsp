@@ -1794,7 +1794,7 @@
                         <a class="nav-link" href="${pageContext.request.contextPath}/doctors">Find Doctors</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/products"><i class="fas fa-shopping-bag me-1"></i>Products</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/products"></i>Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.request.contextPath}/about">About Us</a>
@@ -2103,6 +2103,7 @@
     }
 </style>
 
+
     <!-- Services Section -->
     <section id="services" class="dark overlay-section">
         <div class="geometric-bg"></div>
@@ -2139,6 +2140,696 @@
                 </div>
             </div>
         </div>
+            <!-- Services Animation Section with Beautiful Ayurvedic Images -->
+    <section class="services-animation-section">
+        <div class="container">
+            <div class="section-header">
+                <p class="section-subtitle">Our Premium Services</p>
+                <h2 class="section-title">Holistic Ayurvedic Healing</h2>
+                <p class="services-subtitle">Experience authentic Ayurveda through our three core services</p>
+            </div>
+
+            <div class="services-carousel">
+                <!-- Slide 1: Doctor Services -->
+                <div class="service-slide active">
+                    <div class="slide-content">
+                        <div class="slide-image">
+                            <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Ayurvedic Doctor Consultation" class="beautiful-image">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="slide-info">
+                            <div class="service-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="slide-number">01</div>
+                            <h3>Doctor Consultations</h3>
+                            <p>Connect with certified Ayurvedic doctors for personalized diagnosis based on your unique dosha constitution. Get custom treatment plans for holistic healing.</p>
+                            <div class="features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Personalized Diagnosis</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Dosha Analysis</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Treatment Plans</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Follow-up Care</span>
+                                </div>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/doctors" class="btn-gold">
+                                <span>Find Ayurvedic Doctors</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Hospital Services -->
+                <div class="service-slide">
+                    <div class="slide-content">
+                        <div class="slide-image">
+                            <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Ayurvedic Hospital Treatment" class="beautiful-image">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="slide-info">
+                            <div class="service-icon">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            <div class="slide-number">02</div>
+                            <h3>Hospital & Center Services</h3>
+                            <p>Experience authentic Panchakarma therapies and inpatient care in serene Ayurvedic wellness centers with modern facilities and experienced therapists.</p>
+                            <div class="features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Panchakarma Therapy</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Inpatient Care</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Wellness Programs</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Rejuvenation Therapy</span>
+                                </div>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/hospitals" class="btn-gold">
+                                <span>Explore Ayurvedic Centers</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Product Services -->
+                <div class="service-slide">
+                    <div class="slide-content">
+                        <div class="slide-image">
+                            <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Ayurvedic Herbal Products" class="beautiful-image">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="slide-info">
+                            <div class="service-icon">
+                                <i class="fas fa-capsules"></i>
+                            </div>
+                            <div class="slide-number">03</div>
+                            <h3>Ayurvedic Products</h3>
+                            <p>Discover pure herbal medicines, natural supplements, and wellness products crafted according to ancient Ayurvedic formulations from trusted manufacturers.</p>
+                            <div class="features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Herbal Medicines</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Natural Supplements</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Skincare Range</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Wellness Products</span>
+                                </div>
+                            </div>
+                            <a href="${pageContext.request.contextPath}/products" class="btn-gold">
+                                <span>Browse Ayurvedic Products</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="carousel-controls">
+                    <div class="dots-container">
+                        <button class="dot active" data-slide="0">
+                            <span>Doctors</span>
+                        </button>
+                        <button class="dot" data-slide="1">
+                            <span>Centers</span>
+                        </button>
+                        <button class="dot" data-slide="2">
+                            <span>Products</span>
+                        </button>
+                    </div>
+                    
+                    <div class="arrows-container">
+                        <button class="arrow-btn prev-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="slide-counter">
+                            <span class="current-slide">01</span>
+                            <span class="slash">/</span>
+                            <span class="total-slides">03</span>
+                        </div>
+                        <button class="arrow-btn next-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* Services Animation Section */
+        .services-animation-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #fdfaf4 0%, #f8f3e9 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services-animation-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e6b55c, transparent);
+        }
+
+        .services-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            margin-top: -15px;
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .services-carousel {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .service-slide {
+            display: none;
+            animation: slideFadeIn 0.8s ease-out;
+        }
+
+        .service-slide.active {
+            display: block;
+        }
+
+        @keyframes slideFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-content {
+            display: flex;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(31, 42, 31, 0.1);
+            min-height: 500px;
+            position: relative;
+        }
+
+        .slide-image {
+            flex: 0 0 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .beautiful-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s ease;
+        }
+
+        .service-slide.active .beautiful-image {
+            animation: imageZoom 20s ease-in-out infinite;
+        }
+
+        @keyframes imageZoom {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(31, 42, 31, 0.1) 0%, rgba(230, 181, 92, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        .slide-info {
+            flex: 0 0 50%;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #e6b55c 0%, #d4a347 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(230, 181, 92, 0.3);
+            animation: iconFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .slide-number {
+            font-size: 14px;
+            color: #e6b55c;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .slide-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #1f2a1f;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            position: relative;
+        }
+
+        .slide-info h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #e6b55c;
+        }
+
+        .slide-info p {
+            color: #666;
+            line-height: 1.7;
+            margin: 25px 0 30px;
+            font-size: 16px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .feature-item i {
+            color: #e6b55c;
+            font-size: 12px;
+        }
+
+        .btn-gold {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #e6b55c 0%, #d4a347 100%);
+            color: white;
+            padding: 16px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: fit-content;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(230, 181, 92, 0.4);
+        }
+
+        .btn-gold i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-gold:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Carousel Controls */
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .dot {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .dot::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active::before {
+            background: #e6b55c;
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(230, 181, 92, 0.5);
+        }
+
+        .dot span {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .dot.active span {
+            color: #1f2a1f;
+            font-weight: 600;
+        }
+
+        .arrows-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .arrow-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e6b55c;
+            color: #e6b55c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .arrow-btn:hover {
+            background: #e6b55c;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .slide-counter {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: #1f2a1f;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .slash {
+            color: #e6b55c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .slide-content {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .slide-image {
+                height: 300px;
+                flex: 0 0 auto;
+            }
+            
+            .slide-info {
+                padding: 40px 30px;
+            }
+            
+            .service-slide.active .beautiful-image {
+                animation: imageZoom 15s ease-in-out infinite;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-animation-section {
+                padding: 80px 0;
+            }
+            
+            .slide-info h3 {
+                font-size: 28px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .carousel-controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            
+            .arrows-container {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .slide-info {
+                padding: 30px 20px;
+            }
+            
+            .service-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .slide-info h3 {
+                font-size: 24px;
+            }
+            
+            .services-subtitle {
+                font-size: 16px;
+                padding: 0 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Carousel Functionality with 5-second auto-rotation
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.service-slide');
+            const dots = document.querySelectorAll('.dot');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const currentSlideEl = document.querySelector('.current-slide');
+            let currentSlide = 0;
+            let autoSlideInterval;
+            const totalSlides = slides.length;
+            const ROTATION_INTERVAL = 5000; // 5 seconds
+
+            // Function to show specific slide
+            function showSlide(index) {
+                // Hide all slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                dots.forEach(dot => dot.classList.remove('active'));
+                
+                // Show the selected slide
+                slides[index].classList.add('active');
+                dots[index].classList.add('active');
+                
+                // Update slide counter
+                currentSlideEl.textContent = String(index + 1).padStart(2, '0');
+                
+                // Update current slide index
+                currentSlide = index;
+            }
+
+            // Function for next slide
+            function nextSlide() {
+                const nextIndex = (currentSlide + 1) % totalSlides;
+                showSlide(nextIndex);
+            }
+
+            // Function for previous slide
+            function prevSlide() {
+                const prevIndex = (currentSlide - 1 + totalSlides) % totalSlides;
+                showSlide(prevIndex);
+            }
+
+            // Start auto sliding with 5-second intervals
+            function startAutoSlide() {
+                // Clear any existing interval
+                if (autoSlideInterval) {
+                    clearInterval(autoSlideInterval);
+                }
+                
+                // Start new interval with 5 seconds
+                autoSlideInterval = setInterval(nextSlide, ROTATION_INTERVAL);
+            }
+
+            // Stop auto sliding
+            function stopAutoSlide() {
+                if (autoSlideInterval) {
+                    clearInterval(autoSlideInterval);
+                    autoSlideInterval = null;
+                }
+            }
+
+            // Event Listeners
+            prevBtn.addEventListener('click', function() {
+                stopAutoSlide();
+                prevSlide();
+                startAutoSlide();
+            });
+
+            nextBtn.addEventListener('click', function() {
+                stopAutoSlide();
+                nextSlide();
+                startAutoSlide();
+            });
+
+            // Dot click events
+            dots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const slideIndex = parseInt(this.dataset.slide);
+                    if (slideIndex !== currentSlide) {
+                        stopAutoSlide();
+                        showSlide(slideIndex);
+                        startAutoSlide();
+                    }
+                });
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    stopAutoSlide();
+                    prevSlide();
+                    startAutoSlide();
+                } else if (e.key === 'ArrowRight') {
+                    stopAutoSlide();
+                    nextSlide();
+                    startAutoSlide();
+                }
+            });
+
+            // Pause on hover
+            const carousel = document.querySelector('.services-carousel');
+            carousel.addEventListener('mouseenter', stopAutoSlide);
+            carousel.addEventListener('mouseleave', startAutoSlide);
+
+            // Touch swipe for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            carousel.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+
+            carousel.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    stopAutoSlide();
+                    if (diff > 0) {
+                        nextSlide(); // Swipe left
+                    } else {
+                        prevSlide(); // Swipe right
+                    }
+                    startAutoSlide();
+                }
+            }
+
+            // Initialize carousel
+            showSlide(0);
+            startAutoSlide();
+        });
+    </script>
     </section>
 
     <!-- Testimonials Section -->
