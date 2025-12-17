@@ -46,17 +46,24 @@ public class UserCartController {
             return "redirect:/user/login?redirect=/user/dashboard/cart";
         }
 
+        System.out.println("UserCartController: Viewing cart for user ID: " + userId);
         List<Cart> cartItems = cartService.getCartItems(userId);
+        List<Cart> savedForLaterItems = cartService.getSavedForLaterItems(userId);
         BigDecimal subtotal = cartService.getCartTotal(userId);
 
+        System.out.println("UserCartController: Cart items count: " + (cartItems != null ? cartItems.size() : 0));
+        System.out.println("UserCartController: Saved for later count: " + (savedForLaterItems != null ? savedForLaterItems.size() : 0));
+        System.out.println("UserCartController: Subtotal: " + subtotal);
+
         model.addAttribute("cartItems", cartItems);
+        model.addAttribute("savedForLaterItems", savedForLaterItems);
         model.addAttribute("subtotal", subtotal);
         model.addAttribute("user", userService.findById(userId).orElse(null));
 
         return "user/dashboard/cart";
     }
 
-    @RequestMapping(value = "/cart/add/{productId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/cart/add/{productId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String addToCart(@PathVariable Long productId,
                            @RequestParam(defaultValue = "1") int quantity,
                            @RequestParam(required = false) String redirect,
@@ -71,7 +78,10 @@ public class UserCartController {
             User user = userService.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             
-            cartService.addToCart(user, productId, quantity);
+            System.out.println("UserCartController: Adding product " + productId + " to cart for user " + userId + " with quantity " + quantity);
+            Cart cartItem = cartService.addToCart(user, productId, quantity);
+            System.out.println("UserCartController: Cart item saved with ID: " + (cartItem != null ? cartItem.getId() : "null"));
+            System.out.println("UserCartController: Cart item savedForLater: " + (cartItem != null ? cartItem.getSavedForLater() : "null"));
             
             if ("checkout".equals(redirect)) {
                 redirectAttributes.addFlashAttribute("success", "Product added to cart! Proceeding to checkout...");
@@ -81,6 +91,8 @@ public class UserCartController {
                 return "redirect:/user/dashboard/cart";
             }
         } catch (RuntimeException e) {
+            System.err.println("UserCartController: Error adding to cart: " + e.getMessage());
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/user/dashboard/cart";
         }
@@ -142,6 +154,44 @@ public class UserCartController {
         return "redirect:/user/dashboard/cart";
     }
 
+    @RequestMapping(value = "/cart/save-for-later/{productId}", method = RequestMethod.GET)
+    public String saveForLater(@PathVariable Long productId,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+
+        try {
+            cartService.saveForLater(userId, productId);
+            redirectAttributes.addFlashAttribute("success", "Item saved for later");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/user/dashboard/cart";
+    }
+
+    @RequestMapping(value = "/cart/move-to-cart/{productId}", method = RequestMethod.GET)
+    public String moveToCart(@PathVariable Long productId,
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+
+        try {
+            cartService.moveToCart(userId, productId);
+            redirectAttributes.addFlashAttribute("success", "Item moved to cart");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/user/dashboard/cart";
+    }
+
     // ==================== Wishlist ====================
 
     @RequestMapping(value = "/wishlist", method = RequestMethod.GET)
@@ -189,7 +239,7 @@ public class UserCartController {
     }
 
     @RequestMapping(value = "/wishlist/move-to-cart/{productId}", method = RequestMethod.GET)
-    public String moveToCart(@PathVariable Long productId,
+    public String moveWishlistToCart(@PathVariable Long productId,
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");

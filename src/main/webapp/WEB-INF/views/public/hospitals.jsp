@@ -920,7 +920,9 @@
                                                 <img src="${pageContext.request.contextPath}${hospital.coverPhotoUrl}" alt="${hospital.centerName}">
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=600" alt="${hospital.centerName}">
+                                                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, rgba(26, 46, 26, 0.8), rgba(45, 90, 61, 0.8)); display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-hospital" style="font-size: 4rem; color: rgba(201, 162, 39, 0.5);"></i>
+                                                </div>
                                             </c:otherwise>
                                         </c:choose>
                                         

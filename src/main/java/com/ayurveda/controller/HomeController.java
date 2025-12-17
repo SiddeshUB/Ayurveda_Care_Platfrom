@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class HomeController {
     }
 
     @RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
-    public String home(Authentication auth, Model model) {
+    public String home(Authentication auth, Model model, HttpSession session) {
         List<Hospital> featuredHospitals = hospitalService.getFeaturedHospitals();
         model.addAttribute("featuredHospitals", featuredHospitals);
         
@@ -37,6 +38,14 @@ public class HomeController {
                 User user = userService.findByEmail(auth.getName()).orElse(null);
                 if (user != null) {
                     model.addAttribute("currentUser", user);
+                    
+                    // Check if this is first visit after login (show welcome message on home page)
+                    Boolean showWelcome = (Boolean) session.getAttribute("showWelcome");
+                    if (showWelcome != null && showWelcome) {
+                        model.addAttribute("showWelcome", true);
+                        // Clear the flag so it only shows once
+                        session.setAttribute("showWelcome", false);
+                    }
                 }
             } catch (Exception e) {
                 // User not found or not a USER role - ignore

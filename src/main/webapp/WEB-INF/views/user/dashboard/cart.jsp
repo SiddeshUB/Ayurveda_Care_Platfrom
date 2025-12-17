@@ -158,11 +158,58 @@
                                         <div class="cart-item-total">
                                             ₹<fmt:formatNumber value="${item.totalPrice}"/>
                                         </div>
-                                        <a href="${pageContext.request.contextPath}/user/dashboard/cart/remove/${item.product.id}" class="btn-remove ms-3" title="Remove" onclick="return confirm('Remove this item from cart?')">
-                                            <i class="fas fa-times"></i>
-                                        </a>
+                                        <div class="d-flex flex-column gap-2 ms-3">
+                                            <a href="${pageContext.request.contextPath}/user/dashboard/cart/save-for-later/${item.product.id}" 
+                                               class="btn btn-sm btn-outline-secondary" 
+                                               title="Save for Later"
+                                               style="white-space: nowrap; font-size: 0.85rem;">
+                                                <i class="fas fa-bookmark me-1"></i>Save
+                                            </a>
+                                            <a href="${pageContext.request.contextPath}/user/dashboard/cart/remove/${item.product.id}" 
+                                               class="btn-remove" 
+                                               title="Remove" 
+                                               onclick="return confirm('Remove this item from cart?')">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        </div>
                                     </div>
                                 </c:forEach>
+                                
+                                <!-- Save for Later Section -->
+                                <c:if test="${not empty savedForLaterItems}">
+                                    <div class="p-3 border-top mt-3">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-bookmark me-2 text-warning"></i>Saved for Later (${savedForLaterItems.size()})
+                                        </h6>
+                                        <c:forEach items="${savedForLaterItems}" var="savedItem">
+                                            <div class="cart-item" style="opacity: 0.8;">
+                                                <div class="cart-item-image">
+                                                    <a href="${pageContext.request.contextPath}/products/${savedItem.product.slug}">
+                                                        <img src="${not empty savedItem.product.imageUrl ? (savedItem.product.imageUrl.startsWith('http') ? savedItem.product.imageUrl : pageContext.request.contextPath.concat(savedItem.product.imageUrl)) : pageContext.request.contextPath.concat('/images/no-product.png')}" alt="${savedItem.product.productName}">
+                                                    </a>
+                                                </div>
+                                                <div class="cart-item-info">
+                                                    <h6 class="cart-item-name">
+                                                        <a href="${pageContext.request.contextPath}/products/${savedItem.product.slug}">${savedItem.product.productName}</a>
+                                                    </h6>
+                                                    <p class="cart-item-vendor">Sold by: ${savedItem.product.vendor.storeDisplayName}</p>
+                                                    <span class="cart-item-price">₹<fmt:formatNumber value="${savedItem.unitPrice}"/></span>
+                                                </div>
+                                                <div class="ms-auto d-flex flex-column gap-2">
+                                                    <a href="${pageContext.request.contextPath}/user/dashboard/cart/move-to-cart/${savedItem.product.id}" 
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-shopping-cart me-1"></i>Move to Cart
+                                                    </a>
+                                                    <a href="${pageContext.request.contextPath}/user/dashboard/cart/remove/${savedItem.product.id}" 
+                                                       class="btn btn-sm btn-outline-danger"
+                                                       onclick="return confirm('Remove this item?')">
+                                                        <i class="fas fa-trash me-1"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </c:if>
                             </div>
                         </div>
 
@@ -177,12 +224,26 @@
                                 </div>
                                 <div class="summary-row">
                                     <span>Shipping</span>
-                                    <span class="text-success">Calculated at checkout</span>
+                                    <span class="text-success">Free</span>
+                                </div>
+                                
+                                <div class="summary-row">
+                                    <span>Tax (GST)</span>
+                                    <span>Included</span>
                                 </div>
                                 
                                 <div class="summary-row summary-total">
                                     <span>Total</span>
                                     <span>₹<fmt:formatNumber value="${subtotal}"/></span>
+                                </div>
+                                
+                                <div class="mt-3 p-3 bg-light rounded">
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="fas fa-info-circle me-1"></i>You will save ₹<fmt:formatNumber value="${subtotal}"/> on this order
+                                    </small>
+                                    <small class="text-success d-block">
+                                        <i class="fas fa-check-circle me-1"></i>Free delivery on orders above ₹500
+                                    </small>
                                 </div>
 
                                 <a href="${pageContext.request.contextPath}/user/dashboard/checkout" class="btn btn-checkout mt-3">

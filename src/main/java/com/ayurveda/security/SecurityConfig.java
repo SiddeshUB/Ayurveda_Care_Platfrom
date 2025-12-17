@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.nio.charset.StandardCharsets;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -179,6 +180,24 @@ public class SecurityConfig {
     @Order(5)
     public SecurityFilterChain hospitalFilterChain(HttpSecurity http) throws Exception {
         http
+            .securityMatcher(request -> {
+                String path = request.getRequestURI();
+                // Exclude vendor, admin, doctor, and user routes (handled by other filter chains)
+                // Also exclude static resources - they should be handled by resource handlers
+                if (path == null) return false;
+                if (path.startsWith("/vendor/") || 
+                    path.startsWith("/admin/") || 
+                    path.startsWith("/doctor/") || 
+                    path.startsWith("/user/") ||
+                    path.startsWith("/css/") ||
+                    path.startsWith("/js/") ||
+                    path.startsWith("/images/") ||
+                    path.startsWith("/uploads/") ||
+                    path.startsWith("/webjars/")) {
+                    return false;
+                }
+                return true;
+            })
             .csrf(csrf -> csrf.disable())
             // Disable request cache to prevent redirect loops
             .requestCache(cache -> cache.disable())
@@ -201,6 +220,8 @@ public class SecurityConfig {
                 .requestMatchers("/shop", "/shop/**").permitAll()
                 .requestMatchers("/user/register", "/user/login").permitAll()
                 .requestMatchers("/consultation/book/**").permitAll()
+                // Vendor routes - permit all (vendor uses session-based auth)
+                .requestMatchers("/vendor/**").permitAll()
                 
                 // Booking/action pages - require USER login
                 .requestMatchers("/booking/enquiry/**").hasRole("USER") // Requires user authentication
@@ -243,8 +264,46 @@ public class SecurityConfig {
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
                     // Handle unauthenticated users - redirect to login
+                    // Note: This should only be called for routes that require authentication
+                    // Public routes (permitAll) should not trigger this entry point
                     String contextPath = request.getContextPath();
                     String requestURI = request.getRequestURI();
+                    
+                    // Safety check: if this is a public route, don't redirect
+                    // This should not happen, but if it does, allow the request to proceed
+                    if (requestURI != null) {
+                        String path = requestURI.startsWith(contextPath) ? 
+                            requestURI.substring(contextPath.length()) : requestURI;
+                        
+                        if (path.equals("/") || path.equals("/home") ||
+                            path.startsWith("/products") || path.startsWith("/shop") ||
+                            path.startsWith("/hospitals") || path.startsWith("/doctors") ||
+                            path.startsWith("/about") || path.startsWith("/contact") ||
+                            path.startsWith("/services") || path.startsWith("/hospital/profile") ||
+                            path.startsWith("/doctor/profile") || path.startsWith("/user/login") ||
+                            path.startsWith("/user/register") || path.startsWith("/hospital/login") ||
+                            path.startsWith("/hospital/register") || path.startsWith("/doctor/login") ||
+                            path.startsWith("/doctor/register") || path.startsWith("/vendor/") ||
+                            path.startsWith("/css/") || path.startsWith("/js/") ||
+                            path.startsWith("/images/") || path.startsWith("/uploads/") ||
+                            path.startsWith("/webjars/") || path.startsWith("/api/public/")) {
+                            // This is a public route - should not redirect
+                            // The authenticationEntryPoint shouldn't be called for permitAll routes
+                            // If it is called, it means there's a configuration issue
+                            // Clear the response and allow the request to proceed by not redirecting
+                            response.reset();
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            // Try to forward the request to the controller
+                            try {
+                                request.getRequestDispatcher(requestURI).forward(request, response);
+                            } catch (Exception e) {
+                                // If forward fails, just return - the request should still proceed
+                                // because permitAll should allow it
+                            }
+                            return;
+                        }
+                    }
+                    
                     String redirectUrl = contextPath + "/user/login";
                     
                     if (requestURI != null && (requestURI.contains("/booking/") || requestURI.contains("/room/booking/"))) {

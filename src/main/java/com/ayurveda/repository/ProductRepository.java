@@ -108,6 +108,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.isActive = true ORDER BY p.totalViews DESC")
     List<Product> findMostViewedProducts(Pageable pageable);
 
+    // Find by ID with eager fetching of vendor and category (for admin/view pages)
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.vendor LEFT JOIN FETCH p.category WHERE p.id = :id")
+    Optional<Product> findByIdWithRelations(@Param("id") Long id);
+
     // Products on discount
     @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.isAvailable = true AND p.discountPrice IS NOT NULL AND p.discountPrice > 0 AND p.discountPrice < p.price")
     List<Product> findProductsOnDiscount();

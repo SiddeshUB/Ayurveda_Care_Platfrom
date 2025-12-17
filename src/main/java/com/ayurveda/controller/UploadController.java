@@ -66,24 +66,37 @@ public class UploadController {
             
             File file = null;
             
-            // Get upload path (handles Tomcat external directory)
-            Path uploadPath = getUploadPath();
-            Path targetPath = uploadPath.resolve(filePath);
-            File uploadFile = targetPath.toFile();
-            
-            if (uploadFile.exists() && uploadFile.isFile()) {
-                file = uploadFile;
+            // Priority 1: Try project root first (for development/embedded Tomcat)
+            // Files are typically saved here in embedded mode
+            String projectRoot = System.getProperty("user.dir");
+            if (projectRoot != null) {
+                Path projectUploadPath = Paths.get(projectRoot, "uploads", filePath);
+                File projectFile = projectUploadPath.toFile();
+                System.err.println("UploadController: Checking project root - " + projectUploadPath);
+                if (projectFile.exists() && projectFile.isFile()) {
+                    System.err.println("UploadController: Found file in project root!");
+                    file = projectFile;
+                } else {
+                    System.err.println("UploadController: File not found in project root");
+                }
             }
             
-            // Try relative path from project root (development fallback)
+            // Priority 2: Try the configured upload path (handles Tomcat external directory)
             if (file == null) {
-                String projectRoot = System.getProperty("user.dir");
-                if (projectRoot != null) {
-                    Path relativePath = Paths.get(projectRoot, "uploads", filePath);
-                    File relativeFile = relativePath.toFile();
-                    if (relativeFile.exists() && relativeFile.isFile()) {
-                        file = relativeFile;
-                    }
+                Path uploadPath = getUploadPath();
+                Path targetPath = uploadPath.resolve(filePath);
+                File uploadFile = targetPath.toFile();
+                if (uploadFile.exists() && uploadFile.isFile()) {
+                    file = uploadFile;
+                }
+            }
+            
+            // Priority 3: Try relative path from project root (additional fallback)
+            if (file == null && projectRoot != null) {
+                Path relativePath = Paths.get(projectRoot, uploadDir, filePath);
+                File relativeFile = relativePath.toFile();
+                if (relativeFile.exists() && relativeFile.isFile()) {
+                    file = relativeFile;
                 }
             }
             
@@ -111,17 +124,61 @@ public class UploadController {
             if (file == null) {
                 // Normalize path separators (handle both / and \)
                 String normalizedPath = filePath.replace("\\", "/");
-                Path normalizedTargetPath = uploadPath.resolve(normalizedPath);
+                Path uploadPathForNormalized = getUploadPath();
+                Path normalizedTargetPath = uploadPathForNormalized.resolve(normalizedPath);
                 File normalizedFile = normalizedTargetPath.toFile();
                 if (normalizedFile.exists() && normalizedFile.isFile()) {
                     file = normalizedFile;
                 }
             }
             
+            // Final fallback: Check temp directory (for existing files uploaded before fix)
+            // Also search all tomcat temp directories since files might be in old ones
+            if (file == null) {
+                String catalinaBase = System.getProperty("catalina.base");
+                if (catalinaBase != null && !catalinaBase.isEmpty()) {
+                    // First check current temp directory
+                    Path tempUploadPath = Paths.get(catalinaBase, "uploads", filePath);
+                    File tempFile = tempUploadPath.toFile();
+                    System.err.println("UploadController: Checking current temp directory - " + tempUploadPath);
+                    if (tempFile.exists() && tempFile.isFile()) {
+                        System.err.println("UploadController: Found file in current temp directory");
+                        file = tempFile;
+                    } else {
+                        // Search all tomcat temp directories for legacy files
+                        try {
+                            Path tempBase = Paths.get(System.getProperty("java.io.tmpdir"));
+                            if (tempBase != null && java.nio.file.Files.exists(tempBase)) {
+                                System.err.println("UploadController: Searching all tomcat temp directories in: " + tempBase);
+                                java.nio.file.DirectoryStream<Path> dirs = java.nio.file.Files.newDirectoryStream(tempBase, "tomcat*");
+                                for (Path tomcatDir : dirs) {
+                                    Path legacyUploadPath = tomcatDir.resolve("uploads").resolve(filePath);
+                                    File legacyFile = legacyUploadPath.toFile();
+                                    if (legacyFile.exists() && legacyFile.isFile()) {
+                                        System.err.println("UploadController: Found file in legacy temp directory: " + legacyUploadPath);
+                                        file = legacyFile;
+                                        break;
+                                    }
+                                }
+                                dirs.close();
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors when searching temp directories
+                            System.err.println("UploadController: Error searching temp directories: " + e.getMessage());
+                        }
+                    }
+                }
+            }
+            
             if (file == null || !file.exists() || !file.isFile()) {
                 // Log for debugging (can be removed in production)
+                Path uploadPathForLogging = getUploadPath();
                 System.err.println("UploadController: File not found - " + filePath);
-                System.err.println("UploadController: Searched in - " + uploadPath.resolve(filePath));
+                System.err.println("UploadController: Searched in - " + uploadPathForLogging.resolve(filePath));
+                System.err.println("UploadController: Upload root path - " + uploadPathForLogging);
+                System.err.println("UploadController: Project root - " + System.getProperty("user.dir"));
+                System.err.println("UploadController: Catalina base - " + System.getProperty("catalina.base"));
+                System.err.println("UploadController: Upload dir config - " + uploadDir);
                 return ResponseEntity.notFound().build();
             }
             
@@ -162,11 +219,16 @@ public class UploadController {
             return Paths.get(uploadDir);
         } else {
             String catalinaBase = System.getProperty("catalina.base");
-            if (catalinaBase != null && !catalinaBase.isEmpty()) {
-                // Running in Tomcat - use external directory (outside WAR)
+            // Check if we're in embedded Tomcat (temp directory) vs external Tomcat
+            // Embedded Tomcat uses temp dirs, external Tomcat uses actual catalina.base
+            boolean isEmbeddedTomcat = catalinaBase != null && 
+                                       (catalinaBase.contains("Temp") || catalinaBase.contains("tomcat"));
+            
+            if (catalinaBase != null && !catalinaBase.isEmpty() && !isEmbeddedTomcat) {
+                // Running in external Tomcat - use external directory (outside WAR)
                 return Paths.get(catalinaBase, "uploads");
             } else {
-                // Development or embedded server
+                // Development or embedded server - use project root
                 String projectRoot = System.getProperty("user.dir");
                 return Paths.get(projectRoot, uploadDir);
             }

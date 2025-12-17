@@ -179,6 +179,11 @@ public class ConsultationService {
     public Optional<Consultation> findById(Long id) {
         return consultationRepository.findById(id);
     }
+    
+    // Get consultation by ID with eager fetching of relationships
+    public Optional<Consultation> findByIdWithRelations(Long id) {
+        return consultationRepository.findByIdWithRelations(id);
+    }
 
     // Slot Management
     @Transactional

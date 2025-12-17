@@ -96,6 +96,10 @@ public class Hospital {
     private Double averageRating;
     private Integer totalReviews;
 
+    // Password Reset
+    private String passwordResetToken;
+    private LocalDateTime passwordResetTokenExpiry;
+
     // Timestamps
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -300,6 +304,12 @@ public class Hospital {
 
     public LocalDateTime getLastLoginAt() { return lastLoginAt; }
     public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
+
+    public String getPasswordResetToken() { return passwordResetToken; }
+    public void setPasswordResetToken(String passwordResetToken) { this.passwordResetToken = passwordResetToken; }
+
+    public LocalDateTime getPasswordResetTokenExpiry() { return passwordResetTokenExpiry; }
+    public void setPasswordResetTokenExpiry(LocalDateTime passwordResetTokenExpiry) { this.passwordResetTokenExpiry = passwordResetTokenExpiry; }
 
     public List<Doctor> getDoctors() { return doctors; }
     public void setDoctors(List<Doctor> doctors) { this.doctors = doctors; }

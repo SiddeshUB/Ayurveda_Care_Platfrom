@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +39,24 @@ public class ShopController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ProductQuestionService questionService;
+
+    @Autowired
+    private ProductAnswerService answerService;
+
+    @Autowired
+    private ProductOfferService offerService;
+
+    @Autowired
+    private ProductVariantService variantService;
+
+    @Autowired
+    private ReviewHelpfulVoteService helpfulVoteService;
+
+    @Autowired
+    private RecentlyViewedService recentlyViewedService;
+
     // ==================== Product Catalog ====================
 
     @RequestMapping(value = "/products", method = RequestMethod.GET)
@@ -48,7 +69,6 @@ public class ShopController {
             @RequestParam(defaultValue = "newest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            Authentication authentication,
             Model model) {
 
         // Build sort
@@ -84,11 +104,14 @@ public class ShopController {
         List<ProductCategory> categories = categoryService.findActiveCategories();
 
         // Get user's wishlist and cart count
-        User user = getCurrentUser(authentication);
+        User user = getCurrentUserFromContext();
         if (user != null) {
             model.addAttribute("currentUser", user);
             model.addAttribute("cartCount", cartService.getCartItemCount(user.getId()));
             model.addAttribute("wishlistIds", getWishlistProductIds(user.getId()));
+            // Get recently viewed products
+            var recentViews = recentlyViewedService.getRecentViews(user, 5);
+            model.addAttribute("recentViews", recentViews);
         }
 
         model.addAttribute("products", products);
@@ -108,42 +131,115 @@ public class ShopController {
     // ==================== Product Details ====================
 
     @RequestMapping(value = "/products/{slug}", method = RequestMethod.GET)
-    public String productDetails(@PathVariable String slug, Authentication authentication, Model model) {
-        Product product = productService.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+    public String productDetails(@PathVariable String slug, 
+                                 Model model,
+                                 jakarta.servlet.http.HttpServletRequest request) {
+        try {
+            // Try to find by slug first, if not found, try by ID
+            Product product = productService.findBySlug(slug).orElse(null);
+            
+            // If not found by slug, try to parse as ID
+            if (product == null) {
+                try {
+                    Long productId = Long.parseLong(slug);
+                    product = productService.findById(productId)
+                            .orElseThrow(() -> new RuntimeException("Product not found"));
+                } catch (NumberFormatException e) {
+                    throw new RuntimeException("Product not found");
+                }
+            }
+            
+            // Check if product is active and available
+            if (product == null || (!Boolean.TRUE.equals(product.getIsActive()) || !Boolean.TRUE.equals(product.getIsAvailable()))) {
+                throw new RuntimeException("Product not available");
+            }
 
-        // Increment view count
-        productService.incrementViews(product.getId());
+            // Increment view count
+            productService.incrementViews(product.getId());
 
-        // Get reviews
-        List<ProductReview> reviews = reviewService.getProductReviews(product.getId());
+            // Get reviews
+            List<ProductReview> reviews = reviewService != null ? reviewService.getProductReviews(product.getId()) : new java.util.ArrayList<>();
 
-        // Get similar products
-        List<Product> similarProducts = null;
-        if (product.getCategory() != null) {
-            similarProducts = productService.getSimilarProducts(product.getCategory().getId(), product.getId(), 4);
+            // Get similar products
+            List<Product> similarProducts = null;
+            if (product.getCategory() != null) {
+                similarProducts = productService.getSimilarProducts(product.getCategory().getId(), product.getId(), 4);
+            }
+
+            // Get rating distribution
+            var ratingDistribution = reviewService != null ? reviewService.getRatingDistribution(product.getId()) : new java.util.HashMap<>();
+
+            // Get Q&A
+            var questions = questionService != null ? questionService.getProductQuestions(product.getId()) : new java.util.ArrayList<>();
+            var questionCount = questionService != null ? questionService.getQuestionCount(product.getId()) : 0L;
+
+            // Get offers
+            var productOffers = offerService != null ? offerService.getProductOffers(product.getId()) : new java.util.ArrayList<>();
+            var globalOffers = offerService != null ? offerService.getGlobalOffers() : new java.util.ArrayList<>();
+
+            // Get variants
+            var variants = variantService != null ? variantService.getVariantsGroupedByType(product.getId()) : new java.util.HashMap<>();
+
+            // Get recently viewed
+            User user = getCurrentUserFromContext();
+            
+            // Also try to get user from session if SecurityContext doesn't have it
+            // This is important because public pages might not have SecurityContext set properly
+            if (user == null && request != null) {
+                try {
+                    jakarta.servlet.http.HttpSession session = request.getSession(false);
+                    if (session != null) {
+                        Long userId = (Long) session.getAttribute("userId");
+                        if (userId != null) {
+                            user = userService.findById(userId).orElse(null);
+                        }
+                    }
+                } catch (Exception e) {
+                    // Ignore - user will remain null
+                    e.printStackTrace();
+                }
+            }
+            
+            if (user != null && recentlyViewedService != null) {
+                recentlyViewedService.recordView(user, product.getId());
+                var recentViews = recentlyViewedService.getRecentViews(user, 10);
+                model.addAttribute("recentViews", recentViews);
+            }
+
+            // User info - ALWAYS set currentUser if user exists
+            if (user != null) {
+                model.addAttribute("currentUser", user);
+                if (cartService != null) {
+                    model.addAttribute("cartCount", cartService.getCartItemCount(user.getId()));
+                    model.addAttribute("inCart", cartService.isInCart(user.getId(), product.getId()));
+                }
+                if (wishlistService != null) {
+                    model.addAttribute("inWishlist", wishlistService.isInWishlist(user.getId(), product.getId()));
+                }
+                if (reviewService != null) {
+                    model.addAttribute("hasReviewed", reviewService.hasUserReviewed(product.getId(), user.getId()));
+                }
+            } else {
+                // Explicitly set currentUser to null to ensure JSP knows user is not logged in
+                model.addAttribute("currentUser", null);
+            }
+
+            model.addAttribute("product", product);
+            model.addAttribute("reviews", reviews);
+            model.addAttribute("similarProducts", similarProducts);
+            model.addAttribute("ratingDistribution", ratingDistribution);
+            model.addAttribute("productImages", productService.getProductImages(product.getId()));
+            model.addAttribute("questions", questions);
+            model.addAttribute("questionCount", questionCount);
+            model.addAttribute("productOffers", productOffers);
+            model.addAttribute("globalOffers", globalOffers);
+            model.addAttribute("variants", variants);
+
+            return "public/product-details";
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error loading product: " + e.getMessage(), e);
         }
-
-        // Get rating distribution
-        var ratingDistribution = reviewService.getRatingDistribution(product.getId());
-
-        // User info
-        User user = getCurrentUser(authentication);
-        if (user != null) {
-            model.addAttribute("currentUser", user);
-            model.addAttribute("cartCount", cartService.getCartItemCount(user.getId()));
-            model.addAttribute("inWishlist", wishlistService.isInWishlist(user.getId(), product.getId()));
-            model.addAttribute("inCart", cartService.isInCart(user.getId(), product.getId()));
-            model.addAttribute("hasReviewed", reviewService.hasUserReviewed(product.getId(), user.getId()));
-        }
-
-        model.addAttribute("product", product);
-        model.addAttribute("reviews", reviews);
-        model.addAttribute("similarProducts", similarProducts);
-        model.addAttribute("ratingDistribution", ratingDistribution);
-        model.addAttribute("productImages", productService.getProductImages(product.getId()));
-
-        return "public/product-details";
     }
 
     // ==================== Shop by Category ====================
@@ -153,7 +249,6 @@ public class ShopController {
                                      @RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "12") int size,
                                      @RequestParam(defaultValue = "newest") String sort,
-                                     Authentication authentication,
                                      Model model) {
 
         ProductCategory category = categoryService.findBySlug(slug)
@@ -174,7 +269,7 @@ public class ShopController {
         model.addAttribute("categories", categoryService.findActiveCategories());
         model.addAttribute("currentSort", sort);
 
-        User user = getCurrentUser(authentication);
+        User user = getCurrentUserFromContext();
         if (user != null) {
             model.addAttribute("currentUser", user);
             model.addAttribute("cartCount", cartService.getCartItemCount(user.getId()));
@@ -188,8 +283,16 @@ public class ShopController {
     @RequestMapping(value = "/products/{id}/quick-view", method = RequestMethod.GET)
     @ResponseBody
     public Product quickView(@PathVariable Long id) {
-        return productService.findById(id)
+        Product product = productService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+        // Eagerly load necessary relationships to avoid lazy loading issues
+        if (product.getCategory() != null) {
+            product.getCategory().getDisplayName(); // Trigger lazy load
+        }
+        if (product.getVendor() != null) {
+            product.getVendor().getStoreDisplayName(); // Trigger lazy load
+        }
+        return product;
     }
 
     // ==================== Helper Methods ====================
@@ -201,6 +304,11 @@ public class ShopController {
             return userService.findByEmail(email).orElse(null);
         }
         return null;
+    }
+    
+    private User getCurrentUserFromContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return getCurrentUser(authentication);
     }
 
     private List<Long> getWishlistProductIds(Long userId) {

@@ -65,16 +65,21 @@
                     <h4 class="mt-2 mb-0">Order #${order.orderNumber}</h4>
                     <small class="text-muted">Placed on 
                         <c:if test="${order.createdAt != null}">
-                            ${order.createdAt.dayOfMonth} ${order.createdAt.month.toString().substring(0,3)} ${order.createdAt.year}, ${order.createdAt.hour}:${order.createdAt.minute < 10 ? '0' : ''}${order.createdAt.minute}
+                            <%
+                                com.ayurveda.entity.ProductOrder orderHeader = (com.ayurveda.entity.ProductOrder) pageContext.getAttribute("order");
+                                if (orderHeader != null && orderHeader.getCreatedAt() != null) {
+                                    out.print(orderHeader.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")));
+                                }
+                            %>
                         </c:if>
                     </small>
                 </div>
                 <span class="order-status-badge 
-                    ${order.status == 'PENDING' ? 'bg-warning' : ''}
-                    ${order.status == 'CONFIRMED' ? 'bg-info text-white' : ''}
-                    ${order.status == 'SHIPPED' ? 'bg-primary text-white' : ''}
-                    ${order.status == 'DELIVERED' ? 'bg-success text-white' : ''}
-                    ${order.status == 'CANCELLED' ? 'bg-danger text-white' : ''}">
+                    ${order.status.name() == 'PENDING' ? 'bg-warning' : ''}
+                    ${order.status.name() == 'CONFIRMED' ? 'bg-info text-white' : ''}
+                    ${order.status.name() == 'SHIPPED' ? 'bg-primary text-white' : ''}
+                    ${order.status.name() == 'DELIVERED' ? 'bg-success text-white' : ''}
+                    ${order.status.name() == 'CANCELLED' ? 'bg-danger text-white' : ''}">
                     ${order.status != null ? order.status.displayName : 'Unknown'}
                 </span>
             </div>
@@ -103,7 +108,7 @@
                                     <div class="text-end">
                                         <strong class="text-primary">₹<fmt:formatNumber value="${item.totalPrice}"/></strong>
                                         <br>
-                                        <span class="badge ${item.status == 'DELIVERED' ? 'bg-success' : 'bg-secondary'}">${item.status.displayName}</span>
+                                        <span class="badge ${item.status.name() == 'DELIVERED' ? 'bg-success' : 'bg-secondary'}">${item.status.displayName}</span>
                                     </div>
                                 </div>
                             </c:forEach>
@@ -117,31 +122,95 @@
                         </div>
                         <div class="card-body">
                             <div class="timeline">
+                                <%
+                                    // Get order object once for use in all scriptlets
+                                    com.ayurveda.entity.ProductOrder orderObj = (com.ayurveda.entity.ProductOrder) pageContext.getAttribute("order");
+                                    
+                                    // Check order status flags
+                                    boolean isOrderPending = false;
+                                    boolean isOrderCancelled = false;
+                                    boolean isOrderShipped = false;
+                                    boolean isOrderDelivered = false;
+                                    
+                                    if (orderObj != null && orderObj.getStatus() != null) {
+                                        String statusName = orderObj.getStatus().name();
+                                        isOrderPending = "PENDING".equals(statusName);
+                                        isOrderCancelled = "CANCELLED".equals(statusName);
+                                        isOrderShipped = "SHIPPED".equals(statusName);
+                                        isOrderDelivered = "DELIVERED".equals(statusName);
+                                    }
+                                    
+                                    pageContext.setAttribute("isOrderPending", isOrderPending);
+                                    pageContext.setAttribute("isOrderCancelled", isOrderCancelled);
+                                    pageContext.setAttribute("isOrderShipped", isOrderShipped);
+                                    pageContext.setAttribute("isOrderDelivered", isOrderDelivered);
+                                %>
+                                <c:set var="orderItems" value="${order.orderItems}"/>
+                                <c:set var="hasConfirmedItem" value="false"/>
+                                <c:set var="hasShippedItem" value="false"/>
+                                <c:set var="allItemsDelivered" value="true"/>
+                                <c:forEach items="${orderItems}" var="item">
+                                    <c:if test="${item.status.name() == 'CONFIRMED' || item.status.name() == 'PACKED'}">
+                                        <c:set var="hasConfirmedItem" value="true"/>
+                                    </c:if>
+                                    <c:if test="${item.status.name() == 'SHIPPED' || item.status.name() == 'DELIVERED'}">
+                                        <c:set var="hasShippedItem" value="true"/>
+                                    </c:if>
+                                    <c:if test="${item.status.name() != 'DELIVERED'}">
+                                        <c:set var="allItemsDelivered" value="false"/>
+                                    </c:if>
+                                </c:forEach>
+                                
                                 <div class="timeline-item done">
                                     <h6>Order Placed</h6>
                                     <small>
                                         <c:if test="${order.createdAt != null}">
-                                            ${order.createdAt.dayOfMonth} ${order.createdAt.month.toString().substring(0,3)} ${order.createdAt.year}, ${order.createdAt.hour}:${order.createdAt.minute < 10 ? '0' : ''}${order.createdAt.minute}
+                                            <%
+                                                if (orderObj != null && orderObj.getCreatedAt() != null) {
+                                                    out.print(orderObj.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")));
+                                                }
+                                            %>
                                         </c:if>
                                     </small>
                                 </div>
-                                <div class="timeline-item ${order.status != 'PENDING' && order.status != 'CANCELLED' ? 'done' : ''}">
+                                
+                                <div class="timeline-item ${(!isOrderPending && !isOrderCancelled) || hasConfirmedItem || order.paymentDate != null ? 'done' : ''}">
                                     <h6>Order Confirmed</h6>
-                                    <c:if test="${order.paymentDate != null}">
-                                        <small>${order.paymentDate.dayOfMonth} ${order.paymentDate.month.toString().substring(0,3)} ${order.paymentDate.year}</small>
-                                    </c:if>
+                                    <small>
+                                        <c:if test="${order.paymentDate != null}">
+                                            <%
+                                                if (orderObj != null && orderObj.getPaymentDate() != null) {
+                                                    out.print(orderObj.getPaymentDate().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")));
+                                                }
+                                            %>
+                                        </c:if>
+                                    </small>
                                 </div>
-                                <div class="timeline-item ${order.status == 'SHIPPED' || order.status == 'DELIVERED' ? 'done' : ''}">
+                                
+                                <div class="timeline-item ${isOrderShipped || isOrderDelivered || hasShippedItem || order.shippedDate != null ? 'done' : ''}">
                                     <h6>Shipped</h6>
-                                    <c:if test="${order.shippedDate != null}">
-                                        <small>${order.shippedDate.dayOfMonth} ${order.shippedDate.month.toString().substring(0,3)} ${order.shippedDate.year}</small>
-                                    </c:if>
+                                    <small>
+                                        <c:if test="${order.shippedDate != null}">
+                                            <%
+                                                if (orderObj != null && orderObj.getShippedDate() != null) {
+                                                    out.print(orderObj.getShippedDate().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")));
+                                                }
+                                            %>
+                                        </c:if>
+                                    </small>
                                 </div>
-                                <div class="timeline-item ${order.status == 'DELIVERED' ? 'done' : ''}">
+                                
+                                <div class="timeline-item ${isOrderDelivered || allItemsDelivered || order.deliveredDate != null ? 'done' : ''}">
                                     <h6>Delivered</h6>
-                                    <c:if test="${order.deliveredDate != null}">
-                                        <small>${order.deliveredDate.dayOfMonth} ${order.deliveredDate.month.toString().substring(0,3)} ${order.deliveredDate.year}</small>
-                                    </c:if>
+                                    <small>
+                                        <c:if test="${order.deliveredDate != null}">
+                                            <%
+                                                if (orderObj != null && orderObj.getDeliveredDate() != null) {
+                                                    out.print(orderObj.getDeliveredDate().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")));
+                                                }
+                                            %>
+                                        </c:if>
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -175,13 +244,15 @@
                                 <span>₹<fmt:formatNumber value="${order.totalAmount}"/></span>
                             </div>
                             <hr>
-                            <div class="d-flex justify-content-between small">
-                                <span>Payment Method</span>
-                                <strong>${order.paymentMethod.displayName}</strong>
-                            </div>
+                            <c:if test="${order.paymentMethod != null}">
+                                <div class="d-flex justify-content-between small">
+                                    <span>Payment Method</span>
+                                    <strong>${order.paymentMethod.displayName}</strong>
+                                </div>
+                            </c:if>
                             <div class="d-flex justify-content-between small mt-2">
                                 <span>Payment Status</span>
-                                <span class="badge ${order.paymentStatus == 'PAID' ? 'bg-success' : 'bg-warning'}">${order.paymentStatus.displayName}</span>
+                                <span class="badge ${order.paymentStatus != null && order.paymentStatus.name() == 'PAID' ? 'bg-success' : 'bg-warning'}">${order.paymentStatus != null ? order.paymentStatus.displayName : 'Pending'}</span>
                             </div>
                         </div>
                     </div>
@@ -207,7 +278,7 @@
                     <!-- Actions -->
                     <div class="card">
                         <div class="card-body">
-                            <c:if test="${order.status == 'DELIVERED'}">
+                            <c:if test="${order.status != null && order.status.name() == 'DELIVERED'}">
                                 <a href="#" class="btn btn-outline-primary w-100 mb-2">
                                     <i class="fas fa-redo me-2"></i>Reorder
                                 </a>

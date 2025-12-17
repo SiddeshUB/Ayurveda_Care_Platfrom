@@ -689,6 +689,10 @@
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Main Menu</div>
+                <a href="${pageContext.request.contextPath}/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/user/dashboard" class="nav-item ${param.activeNav == 'dashboard' ? 'active' : ''}">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
@@ -711,6 +715,10 @@
                 <a href="${pageContext.request.contextPath}/user/dashboard/consultations" class="nav-item ${param.activeNav == 'consultations' ? 'active' : ''}">
                     <i class="fas fa-stethoscope"></i>
                     <span>My Consultations</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/user/dashboard/prescriptions" class="nav-item ${param.activeNav == 'prescriptions' ? 'active' : ''}">
+                    <i class="fas fa-prescription"></i>
+                    <span>My Prescriptions</span>
                 </a>
                 <a href="${pageContext.request.contextPath}/user/bookings" class="nav-item ${param.activeNav == 'bookings' ? 'active' : ''}">
                     <i class="fas fa-calendar-check"></i>

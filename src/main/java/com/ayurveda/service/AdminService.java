@@ -217,7 +217,8 @@ public class AdminService {
     }
 
     public Optional<Doctor> getDoctorById(Long id) {
-        return doctorRepository.findById(id);
+        // Use eager fetch to avoid LazyInitializationException when accessing hospital in JSP
+        return doctorRepository.findByIdWithHospital(id).or(() -> doctorRepository.findById(id));
     }
 
     // Booking Management (View Only)
@@ -235,7 +236,8 @@ public class AdminService {
     }
 
     public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+        // Use eager fetch to avoid LazyInitializationException when accessing vendor/category in JSP
+        return productRepository.findByIdWithRelations(id).or(() -> productRepository.findById(id));
     }
 
     // Enquiry Management (View Only)

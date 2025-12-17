@@ -44,6 +44,8 @@ public class CartService {
         if (existingItem.isPresent()) {
             // Update quantity
             Cart cart = existingItem.get();
+            // Always set savedForLater to false when adding to cart (even if it was previously saved for later)
+            cart.setSavedForLater(false);
             int newQuantity = cart.getQuantity() + quantity;
 
             // Check stock for new quantity
@@ -57,6 +59,8 @@ public class CartService {
             // Create new cart item
             BigDecimal price = product.getEffectivePrice();
             Cart cart = new Cart(user, product, product.getVendor(), quantity, price);
+            // Explicitly set savedForLater to false to avoid NULL issues
+            cart.setSavedForLater(false);
             return cartRepository.save(cart);
         }
     }
@@ -80,6 +84,10 @@ public class CartService {
         }
 
         cart.setQuantity(quantity);
+        // Ensure savedForLater is false when updating quantity
+        if (cart.getSavedForLater() == null) {
+            cart.setSavedForLater(false);
+        }
         return cartRepository.save(cart);
     }
 
@@ -96,7 +104,25 @@ public class CartService {
     // ==================== Get Cart ====================
 
     public List<Cart> getCartItems(Long userId) {
-        return cartRepository.findByUserIdAndSavedForLaterFalseOrderByCreatedAtDesc(userId);
+        // Use explicit query to handle null values properly
+        List<Cart> items = cartRepository.findByUserIdAndSavedForLaterFalseOrderByCreatedAtDesc(userId);
+        // Also check if query returns empty, try alternative query
+        if (items == null || items.isEmpty()) {
+            // Fallback: get all items and filter in memory (for debugging)
+            List<Cart> allItems = cartRepository.findByUserIdOrderByCreatedAtDesc(userId);
+            System.out.println("CartService: Total cart items for user " + userId + ": " + (allItems != null ? allItems.size() : 0));
+            if (allItems != null) {
+                for (Cart item : allItems) {
+                    System.out.println("CartService: Item ID=" + item.getId() + ", Product=" + item.getProduct().getId() + ", savedForLater=" + item.getSavedForLater());
+                }
+            }
+            // Filter items where savedForLater is false or null
+            items = allItems != null ? allItems.stream()
+                    .filter(item -> item.getSavedForLater() == null || !item.getSavedForLater())
+                    .collect(java.util.stream.Collectors.toList()) : java.util.Collections.emptyList();
+        }
+        System.out.println("CartService: Returning " + (items != null ? items.size() : 0) + " cart items for user " + userId);
+        return items;
     }
 
     public List<Cart> getSavedForLaterItems(Long userId) {

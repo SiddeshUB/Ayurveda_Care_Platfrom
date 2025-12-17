@@ -322,6 +322,8 @@ public class DoctorService {
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         
         if (updateData.getName() != null) doctor.setName(updateData.getName());
+        if (updateData.getGender() != null) doctor.setGender(updateData.getGender());
+        if (updateData.getPhone() != null) doctor.setPhone(updateData.getPhone());
         if (updateData.getQualifications() != null) doctor.setQualifications(updateData.getQualifications());
         if (updateData.getSpecializations() != null) doctor.setSpecializations(updateData.getSpecializations());
         if (updateData.getExperienceYears() != null) doctor.setExperienceYears(updateData.getExperienceYears());
@@ -331,6 +333,7 @@ public class DoctorService {
         if (updateData.getConsultationDays() != null) doctor.setConsultationDays(updateData.getConsultationDays());
         if (updateData.getRegistrationNumber() != null) doctor.setRegistrationNumber(updateData.getRegistrationNumber());
         if (updateData.getDegreeUniversity() != null) doctor.setDegreeUniversity(updateData.getDegreeUniversity());
+        if (updateData.getAvailableLocations() != null) doctor.setAvailableLocations(updateData.getAvailableLocations());
         if (updateData.getIsActive() != null) doctor.setIsActive(updateData.getIsActive());
         if (updateData.getIsAvailable() != null) doctor.setIsAvailable(updateData.getIsAvailable());
         

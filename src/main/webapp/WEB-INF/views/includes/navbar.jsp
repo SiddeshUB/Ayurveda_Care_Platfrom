@@ -9,6 +9,13 @@
         </button>
         <ul class="nav-links">
             <li><a href="${pageContext.request.contextPath}/">Home</a></li>
+            <c:if test="${not empty currentUser}">
+                <li>
+                    <a href="${pageContext.request.contextPath}/user/dashboard" class="nav-dashboard">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+            </c:if>
             <li><a href="${pageContext.request.contextPath}/hospitals">Find Centers</a></li>
             <li><a href="${pageContext.request.contextPath}/doctors">Find Doctors</a></li>
             <li><a href="${pageContext.request.contextPath}/products"><i class="fas fa-shopping-bag"></i> Products</a></li>
@@ -18,7 +25,7 @@
             <c:choose>
                 <c:when test="${not empty currentUser}">
                     <li class="user-menu-container">
-                        <a href="#" class="user-name-link" id="userMenuToggle">
+                        <a href="#" class="user-name-link" id="userMenuToggle" title="Your account menu">
                             <i class="fas fa-user-circle"></i>
                             <span>${currentUser.fullName}</span>
                             <i class="fas fa-chevron-down"></i>

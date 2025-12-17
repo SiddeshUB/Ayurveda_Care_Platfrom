@@ -37,5 +37,8 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     List<Consultation> findByUserId(Long userId);
     
     List<Consultation> findByUserIdOrderByConsultationDateDesc(Long userId);
+    
+    @Query("SELECT c FROM Consultation c LEFT JOIN FETCH c.doctor LEFT JOIN FETCH c.hospital LEFT JOIN FETCH c.user WHERE c.id = :id")
+    Optional<Consultation> findByIdWithRelations(@Param("id") Long id);
 }
 

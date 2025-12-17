@@ -262,9 +262,15 @@ public class VendorProductService {
         Path rootUploadPath = getUploadRootPath();
         Path uploadPath = rootUploadPath.resolve("products");
 
+        // Log where files are being saved (for debugging)
+        System.out.println("VendorProductService: Saving file to project directory");
+        System.out.println("VendorProductService: Root upload path: " + rootUploadPath);
+        System.out.println("VendorProductService: Full upload path: " + uploadPath);
+
         // Ensure directory exists
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
+            System.out.println("VendorProductService: Created directory: " + uploadPath);
         }
 
         // Save file
@@ -276,6 +282,7 @@ public class VendorProductService {
             if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
                 throw new IOException("Failed to save file: " + filePath);
             }
+            System.out.println("VendorProductService: File saved successfully to: " + filePath);
         } catch (IOException e) {
             System.err.println("Error saving product image: " + e.getMessage());
             System.err.println("Upload path: " + uploadPath);
@@ -308,18 +315,33 @@ public class VendorProductService {
         // Check if uploadDir is absolute or relative
         if (Paths.get(uploadDir).isAbsolute()) {
             // Absolute path specified in config
+            System.out.println("VendorProductService: Using absolute upload path: " + uploadDir);
             return Paths.get(uploadDir);
         } else {
             // Check if running in Tomcat
             String catalinaBase = System.getProperty("catalina.base");
-            if (catalinaBase != null && !catalinaBase.isEmpty()) {
-                // Running in Tomcat - use external directory (outside WAR)
+            // Check if we're in embedded Tomcat (temp directory) vs external Tomcat
+            // Embedded Tomcat uses temp dirs, external Tomcat uses actual catalina.base
+            boolean isEmbeddedTomcat = catalinaBase != null && 
+                                       (catalinaBase.contains("Temp") || catalinaBase.contains("tomcat"));
+            
+            if (catalinaBase != null && !catalinaBase.isEmpty() && !isEmbeddedTomcat) {
+                // Running in external Tomcat - use external directory (outside WAR)
                 // This ensures files persist across deployments
-                return Paths.get(catalinaBase, "uploads");
+                Path externalPath = Paths.get(catalinaBase, "uploads");
+                System.out.println("VendorProductService: Using external Tomcat path: " + externalPath);
+                return externalPath;
             } else {
-                // Development or embedded server - use relative path
+                // Development or embedded server - use project root (THIS IS WHAT WE WANT)
                 String projectRoot = System.getProperty("user.dir");
-                return Paths.get(projectRoot, uploadDir);
+                Path projectPath = Paths.get(projectRoot, uploadDir);
+                System.out.println("VendorProductService: Using PROJECT ROOT for uploads: " + projectPath);
+                System.out.println("VendorProductService: Project root: " + projectRoot);
+                System.out.println("VendorProductService: Upload dir: " + uploadDir);
+                if (isEmbeddedTomcat) {
+                    System.out.println("VendorProductService: Detected embedded Tomcat, using project root instead of temp directory");
+                }
+                return projectPath;
             }
         }
     }

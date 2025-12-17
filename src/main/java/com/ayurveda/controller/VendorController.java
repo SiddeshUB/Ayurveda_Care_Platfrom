@@ -4,6 +4,7 @@ import com.ayurveda.entity.*;
 import com.ayurveda.entity.Vendor.BusinessType;
 import com.ayurveda.entity.Vendor.AccountType;
 import com.ayurveda.entity.VendorDocument.DocumentType;
+import com.ayurveda.entity.ProductImage;
 import com.ayurveda.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,7 +220,7 @@ public class VendorController {
     public String addProduct(@ModelAttribute Product product,
                             @RequestParam(required = false) Long categoryId,
                             @RequestParam(required = false) String customCategory,
-                            @RequestParam(required = false) MultipartFile image,
+                            @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles,
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
         Vendor vendor = getVendorFromSession(session);
@@ -239,9 +240,33 @@ public class VendorController {
             // Create product
             Product savedProduct = productService.createProduct(product, vendor);
 
-            // Upload image
-            if (image != null && !image.isEmpty()) {
-                productService.uploadProductImage(image, savedProduct.getId());
+            // Upload images
+            if (imageFiles != null && imageFiles.length > 0) {
+                Long firstImageId = null;
+                for (MultipartFile image : imageFiles) {
+                    if (image != null && !image.isEmpty()) {
+                        try {
+                            String imageUrl = productService.uploadProductImage(image, savedProduct.getId());
+                            // Get the uploaded image ID to set as featured
+                            if (firstImageId == null) {
+                                List<ProductImage> productImages = productService.getProductImages(savedProduct.getId());
+                                for (ProductImage img : productImages) {
+                                    if (img.getImageUrl().equals(imageUrl)) {
+                                        firstImageId = img.getId();
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            // Log error but continue with other images
+                            System.err.println("Error uploading image: " + e.getMessage());
+                        }
+                    }
+                }
+                // Set first uploaded image as featured/main image
+                if (firstImageId != null) {
+                    productService.setFeaturedImage(savedProduct.getId(), firstImageId);
+                }
             }
 
             redirectAttributes.addFlashAttribute("success", "Product added successfully!");
@@ -407,12 +432,7 @@ public class VendorController {
 
         try {
             OrderItem.ItemStatus itemStatus = OrderItem.ItemStatus.valueOf(status);
-            OrderItem item = orderService.updateItemStatus(itemId, itemStatus, vendor.getId());
-
-            if (trackingNumber != null && !trackingNumber.isEmpty()) {
-                item.setTrackingNumber(trackingNumber);
-            }
-
+            OrderItem item = orderService.updateItemStatus(itemId, itemStatus, vendor.getId(), trackingNumber);
             redirectAttributes.addFlashAttribute("success", "Order status updated!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

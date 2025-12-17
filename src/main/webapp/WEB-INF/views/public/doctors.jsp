@@ -1104,9 +1104,6 @@
                                         </c:if>
                                         
                                         <div class="doctor-actions">
-                                            <a href="${pageContext.request.contextPath}/doctor/profile/${doctor.id}" class="btn-profile">
-                                                View Profile
-                                            </a>
                                             <a href="${pageContext.request.contextPath}/consultation/book/${doctor.id}" class="btn-book">
                                                 <i class="fas fa-calendar-check"></i> Book Now
                                             </a>

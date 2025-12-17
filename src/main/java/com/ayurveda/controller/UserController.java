@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpSession;
 
 import com.ayurveda.entity.Booking;
 import com.ayurveda.entity.Cart;
@@ -41,8 +42,10 @@ import com.ayurveda.service.ProductReviewService;
 import com.ayurveda.service.ReviewService;
 import com.ayurveda.service.RoomService;
 import com.ayurveda.service.UserService;
+import com.ayurveda.service.PrescriptionService;
 import com.ayurveda.entity.Review;
 import com.ayurveda.entity.ProductReview;
+import com.ayurveda.entity.Prescription;
 
 @Controller
 @RequestMapping("/user")
@@ -58,6 +61,7 @@ public class UserController {
     private final ConsultationService consultationService;
     private final ReviewService reviewService;
     private final ProductReviewService productReviewService;
+    private final PrescriptionService prescriptionService;
 
     @Autowired
     public UserController(UserService userService,
@@ -69,7 +73,8 @@ public class UserController {
                          BookingService bookingService,
                          ConsultationService consultationService,
                          ReviewService reviewService,
-                         ProductReviewService productReviewService) {
+                         ProductReviewService productReviewService,
+                         PrescriptionService prescriptionService) {
         this.userService = userService;
         this.hospitalService = hospitalService;
         this.roomService = roomService;
@@ -80,6 +85,7 @@ public class UserController {
         this.consultationService = consultationService;
         this.reviewService = reviewService;
         this.productReviewService = productReviewService;
+        this.prescriptionService = prescriptionService;
     }
 
     // Helper method to get current user
@@ -128,7 +134,7 @@ public class UserController {
 
     // ========== DASHBOARD ==========
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-    public String dashboard(Authentication auth, Model model) {
+    public String dashboard(Authentication auth, Model model, HttpSession session) {
         User user = getCurrentUser(auth);
         userService.updateLastLogin(user.getId());
 
@@ -144,12 +150,21 @@ public class UserController {
                 .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt()))
                 .limit(5)
                 .collect(Collectors.toList());
-        
+
         // Get recent room bookings for the user
         List<RoomBooking> recentRoomBookings = roomService.getRoomBookingsByUser(user.getId()).stream()
                 .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt()))
                 .limit(5)
                 .collect(Collectors.toList());
+        
+        // Check if this is first visit after login (show welcome message)
+        Boolean showWelcome = (Boolean) session.getAttribute("showWelcome");
+        if (showWelcome == null) {
+            showWelcome = true;
+            session.setAttribute("showWelcome", false);
+        } else {
+            showWelcome = false;
+        }
 
         model.addAttribute("user", user);
         model.addAttribute("stats", stats);
@@ -157,6 +172,7 @@ public class UserController {
         model.addAttribute("recentEnquiries", recentEnquiries);
         model.addAttribute("recentBookings", recentBookings);
         model.addAttribute("recentRoomBookings", recentRoomBookings);
+        model.addAttribute("showWelcome", showWelcome);
 
         return "user/dashboard/index";
     }
@@ -590,7 +606,8 @@ public class UserController {
     public String consultationDetails(@PathVariable Long id, Authentication auth, Model model) {
         User user = getCurrentUser(auth);
         
-        Consultation consultation = consultationService.findById(id)
+        // Use findByIdWithRelations to eagerly fetch doctor, hospital, and user
+        Consultation consultation = consultationService.findByIdWithRelations(id)
                 .orElseThrow(() -> new RuntimeException("Consultation not found"));
         
         // Security check - ensure user owns this consultation
@@ -598,10 +615,45 @@ public class UserController {
             throw new RuntimeException("Unauthorized access");
         }
         
+        // Check if prescription exists for this consultation
+        var prescription = prescriptionService.findByConsultationId(id);
+        
         model.addAttribute("user", user);
         model.addAttribute("consultation", consultation);
+        model.addAttribute("prescription", prescription.orElse(null));
         
         return "user/dashboard/consultation-details";
+    }
+
+    // ========== PRESCRIPTIONS ==========
+    @RequestMapping(value = "/dashboard/prescriptions", method = RequestMethod.GET)
+    public String prescriptions(Authentication auth, Model model) {
+        User user = getCurrentUser(auth);
+        
+        List<Prescription> prescriptions = prescriptionService.getPrescriptionsByPatient(user.getEmail());
+        
+        model.addAttribute("user", user);
+        model.addAttribute("prescriptions", prescriptions);
+        
+        return "user/dashboard/prescriptions";
+    }
+
+    @RequestMapping(value = "/dashboard/prescriptions/{id}", method = RequestMethod.GET)
+    public String prescriptionDetails(@PathVariable Long id, Authentication auth, Model model) {
+        User user = getCurrentUser(auth);
+        
+        Prescription prescription = prescriptionService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Prescription not found"));
+        
+        // Security check - ensure user owns this prescription
+        if (prescription.getPatientEmail() == null || !prescription.getPatientEmail().equals(user.getEmail())) {
+            throw new RuntimeException("Unauthorized access");
+        }
+        
+        model.addAttribute("user", user);
+        model.addAttribute("prescription", prescription);
+        
+        return "user/dashboard/prescription-details";
     }
 
     // ========== REVIEW FORM ==========

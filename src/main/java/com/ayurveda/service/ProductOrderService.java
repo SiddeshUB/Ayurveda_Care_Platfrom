@@ -218,7 +218,8 @@ public class ProductOrderService {
         return orderRepository.save(order);
     }
 
-    public OrderItem updateItemStatus(Long itemId, ItemStatus status, Long vendorId) {
+    @Transactional
+    public OrderItem updateItemStatus(Long itemId, ItemStatus status, Long vendorId, String trackingNumber) {
         OrderItem item = orderItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Order item not found"));
 
@@ -228,6 +229,16 @@ public class ProductOrderService {
         }
 
         item.setStatus(status);
+        
+        // Set tracking number if provided
+        if (trackingNumber != null && !trackingNumber.trim().isEmpty()) {
+            item.setTrackingNumber(trackingNumber.trim());
+        }
+        
+        OrderItem savedItem = orderItemRepository.save(item);
+
+        // Update parent order status and dates based on all items
+        updateParentOrderStatus(item.getOrder());
 
         if (status == ItemStatus.DELIVERED) {
             // Release this item's pending balance
@@ -243,7 +254,56 @@ public class ProductOrderService {
             productService.incrementSales(item.getProduct().getId(), item.getQuantity());
         }
 
-        return orderItemRepository.save(item);
+        return savedItem;
+    }
+
+    // Overloaded method for backward compatibility (without tracking number)
+    @Transactional
+    public OrderItem updateItemStatus(Long itemId, ItemStatus status, Long vendorId) {
+        return updateItemStatus(itemId, status, vendorId, null);
+    }
+
+    /**
+     * Updates the parent order status and dates based on all order items' statuses
+     */
+    private void updateParentOrderStatus(ProductOrder order) {
+        List<OrderItem> items = orderItemRepository.findByOrderId(order.getId());
+        if (items.isEmpty()) {
+            return;
+        }
+
+        // Count items by status
+        long totalItems = items.size();
+        long pendingCount = items.stream().filter(i -> i.getStatus() == ItemStatus.PENDING).count();
+        long confirmedCount = items.stream().filter(i -> i.getStatus() == ItemStatus.CONFIRMED || i.getStatus() == ItemStatus.PACKED).count();
+        long shippedCount = items.stream().filter(i -> i.getStatus() == ItemStatus.SHIPPED || i.getStatus() == ItemStatus.DELIVERED).count();
+        long deliveredCount = items.stream().filter(i -> i.getStatus() == ItemStatus.DELIVERED).count();
+        long cancelledCount = items.stream().filter(i -> i.getStatus() == ItemStatus.CANCELLED).count();
+
+        // Update order status based on items
+        if (deliveredCount == totalItems) {
+            // All items delivered
+            order.setStatus(OrderStatus.DELIVERED);
+            if (order.getDeliveredDate() == null) {
+                order.setDeliveredDate(LocalDateTime.now());
+            }
+        } else if (shippedCount > 0 || deliveredCount > 0) {
+            // At least one item shipped or delivered
+            if (order.getStatus() != OrderStatus.DELIVERED) {
+                order.setStatus(OrderStatus.SHIPPED);
+            }
+            if (order.getShippedDate() == null) {
+                order.setShippedDate(LocalDateTime.now());
+            }
+        } else if (confirmedCount > 0 || pendingCount < totalItems) {
+            // At least one item confirmed or not pending
+            if (order.getStatus() == OrderStatus.PENDING) {
+                order.setStatus(OrderStatus.CONFIRMED);
+            }
+        }
+
+        // Save the updated order
+        orderRepository.save(order);
     }
 
     private void releasePendingBalances(ProductOrder order) {
@@ -281,7 +341,8 @@ public class ProductOrderService {
     // ==================== Get Orders ====================
 
     public Optional<ProductOrder> findById(Long id) {
-        return orderRepository.findById(id);
+        // Use eager fetch to avoid LazyInitializationException when accessing orderItems in JSP
+        return orderRepository.findByIdWithItems(id).or(() -> orderRepository.findById(id));
     }
 
     public Optional<ProductOrder> findByOrderNumber(String orderNumber) {

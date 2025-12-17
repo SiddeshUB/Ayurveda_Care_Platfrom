@@ -38,6 +38,7 @@
             <small>${vendor.storeDisplayName}</small>
         </div>
         <div class="sidebar-menu">
+            <a href="${pageContext.request.contextPath}/"><i class="fas fa-home"></i>Home</a>
             <a href="${pageContext.request.contextPath}/vendor/dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
             <div class="menu-label">Products</div>
             <a href="${pageContext.request.contextPath}/vendor/products"><i class="fas fa-box"></i>All Products</a>

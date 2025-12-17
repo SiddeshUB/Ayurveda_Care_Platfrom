@@ -144,8 +144,20 @@
                                                         </c:if>
                                                     </td>
                                                     <td>
-                                                        <fmt:formatDate value="${txn.createdAt}" pattern="dd MMM yyyy"/>
-                                                        <br><small class="text-muted"><fmt:formatDate value="${txn.createdAt}" pattern="hh:mm a"/></small>
+                                                        <%
+                                                            com.ayurveda.entity.WalletTransaction t = (com.ayurveda.entity.WalletTransaction) pageContext.getAttribute("txn");
+                                                            if (t != null && t.getCreatedAt() != null) {
+                                                                out.print(t.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy")));
+                                                            }
+                                                        %>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            <%
+                                                                if (t != null && t.getCreatedAt() != null) {
+                                                                    out.print(t.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a")));
+                                                                }
+                                                            %>
+                                                        </small>
                                                     </td>
                                                     <td class="text-end">
                                                         <strong class="${txn.type == 'ORDER_CREDIT' ? 'text-success' : 'text-danger'}">

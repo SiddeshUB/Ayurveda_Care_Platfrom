@@ -123,6 +123,49 @@ public class Product {
 
     private BigDecimal shippingCharge;
 
+    // Warranty & Services
+    private String warrantyPeriod; // e.g., "1 Year", "2 Years"
+    
+    @Column(columnDefinition = "TEXT")
+    private String warrantyDetails; // Detailed warranty information
+    
+    private String serviceCenterInfo; // Service center contact info
+    
+    private Boolean installationService = false; // If installation service available
+    
+    private BigDecimal installationCharge; // Installation service charge
+    
+    private Boolean extendedWarrantyAvailable = false; // Extended warranty option
+    
+    // EMI Options
+    private Boolean emiAvailable = false;
+    
+    private String emiOptions; // JSON string: [{"months": 3, "interest": 0}, {"months": 6, "interest": 5}]
+    
+    private BigDecimal minEmiAmount; // Minimum amount for EMI
+    
+    // Delivery
+    private Integer deliveryDaysMin = 3; // Minimum delivery days
+    
+    private Integer deliveryDaysMax = 7; // Maximum delivery days
+    
+    private Boolean expressDeliveryAvailable = false;
+    
+    private BigDecimal expressDeliveryCharge;
+    
+    private Integer expressDeliveryDays = 1;
+    
+    // Seller Policies
+    private String returnPolicy; // Return policy description
+    
+    private Integer returnPeriodDays = 7; // Days within which return is allowed
+    
+    private String replacementPolicy; // Replacement policy description
+    
+    private Integer replacementPeriodDays = 7; // Days within which replacement is allowed
+    
+    private String cancellationPolicy; // Cancellation policy
+    
     // Analytics
     private Long totalViews = 0L;
 
@@ -144,6 +187,15 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductReview> reviews;
+    
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ProductVariant> variants;
+    
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ProductQuestion> questions;
+    
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ProductOffer> offers;
 
     public Product() {}
 
@@ -173,6 +225,16 @@ public class Product {
         if (slug == null || slug.isEmpty()) {
             slug = productName.toLowerCase().replaceAll("[^a-z0-9]+", "-");
         }
+        if (freeShipping == null) freeShipping = false;
+        if (installationService == null) installationService = false;
+        if (extendedWarrantyAvailable == null) extendedWarrantyAvailable = false;
+        if (emiAvailable == null) emiAvailable = false;
+        if (expressDeliveryAvailable == null) expressDeliveryAvailable = false;
+        if (returnPeriodDays == null) returnPeriodDays = 7;
+        if (replacementPeriodDays == null) replacementPeriodDays = 7;
+        if (deliveryDaysMin == null) deliveryDaysMin = 3;
+        if (deliveryDaysMax == null) deliveryDaysMax = 7;
+        if (expressDeliveryDays == null) expressDeliveryDays = 1;
         calculateDiscount();
     }
 
@@ -367,4 +429,71 @@ public class Product {
 
     public List<ProductReview> getReviews() { return reviews; }
     public void setReviews(List<ProductReview> reviews) { this.reviews = reviews; }
+
+    public List<ProductVariant> getVariants() { return variants; }
+    public void setVariants(List<ProductVariant> variants) { this.variants = variants; }
+
+    public List<ProductQuestion> getQuestions() { return questions; }
+    public void setQuestions(List<ProductQuestion> questions) { this.questions = questions; }
+
+    public List<ProductOffer> getOffers() { return offers; }
+    public void setOffers(List<ProductOffer> offers) { this.offers = offers; }
+
+    // New field getters and setters
+    public String getWarrantyPeriod() { return warrantyPeriod; }
+    public void setWarrantyPeriod(String warrantyPeriod) { this.warrantyPeriod = warrantyPeriod; }
+
+    public String getWarrantyDetails() { return warrantyDetails; }
+    public void setWarrantyDetails(String warrantyDetails) { this.warrantyDetails = warrantyDetails; }
+
+    public String getServiceCenterInfo() { return serviceCenterInfo; }
+    public void setServiceCenterInfo(String serviceCenterInfo) { this.serviceCenterInfo = serviceCenterInfo; }
+
+    public Boolean getInstallationService() { return installationService; }
+    public void setInstallationService(Boolean installationService) { this.installationService = installationService; }
+
+    public BigDecimal getInstallationCharge() { return installationCharge; }
+    public void setInstallationCharge(BigDecimal installationCharge) { this.installationCharge = installationCharge; }
+
+    public Boolean getExtendedWarrantyAvailable() { return extendedWarrantyAvailable; }
+    public void setExtendedWarrantyAvailable(Boolean extendedWarrantyAvailable) { this.extendedWarrantyAvailable = extendedWarrantyAvailable; }
+
+    public Boolean getEmiAvailable() { return emiAvailable; }
+    public void setEmiAvailable(Boolean emiAvailable) { this.emiAvailable = emiAvailable; }
+
+    public String getEmiOptions() { return emiOptions; }
+    public void setEmiOptions(String emiOptions) { this.emiOptions = emiOptions; }
+
+    public BigDecimal getMinEmiAmount() { return minEmiAmount; }
+    public void setMinEmiAmount(BigDecimal minEmiAmount) { this.minEmiAmount = minEmiAmount; }
+
+    public Integer getDeliveryDaysMin() { return deliveryDaysMin; }
+    public void setDeliveryDaysMin(Integer deliveryDaysMin) { this.deliveryDaysMin = deliveryDaysMin; }
+
+    public Integer getDeliveryDaysMax() { return deliveryDaysMax; }
+    public void setDeliveryDaysMax(Integer deliveryDaysMax) { this.deliveryDaysMax = deliveryDaysMax; }
+
+    public Boolean getExpressDeliveryAvailable() { return expressDeliveryAvailable; }
+    public void setExpressDeliveryAvailable(Boolean expressDeliveryAvailable) { this.expressDeliveryAvailable = expressDeliveryAvailable; }
+
+    public BigDecimal getExpressDeliveryCharge() { return expressDeliveryCharge; }
+    public void setExpressDeliveryCharge(BigDecimal expressDeliveryCharge) { this.expressDeliveryCharge = expressDeliveryCharge; }
+
+    public Integer getExpressDeliveryDays() { return expressDeliveryDays; }
+    public void setExpressDeliveryDays(Integer expressDeliveryDays) { this.expressDeliveryDays = expressDeliveryDays; }
+
+    public String getReturnPolicy() { return returnPolicy; }
+    public void setReturnPolicy(String returnPolicy) { this.returnPolicy = returnPolicy; }
+
+    public Integer getReturnPeriodDays() { return returnPeriodDays; }
+    public void setReturnPeriodDays(Integer returnPeriodDays) { this.returnPeriodDays = returnPeriodDays; }
+
+    public String getReplacementPolicy() { return replacementPolicy; }
+    public void setReplacementPolicy(String replacementPolicy) { this.replacementPolicy = replacementPolicy; }
+
+    public Integer getReplacementPeriodDays() { return replacementPeriodDays; }
+    public void setReplacementPeriodDays(Integer replacementPeriodDays) { this.replacementPeriodDays = replacementPeriodDays; }
+
+    public String getCancellationPolicy() { return cancellationPolicy; }
+    public void setCancellationPolicy(String cancellationPolicy) { this.cancellationPolicy = cancellationPolicy; }
 }

@@ -25,4 +25,8 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     List<Doctor> findByIsActiveTrueAndIsVerifiedTrue();
     
     Optional<Doctor> findByPasswordResetToken(String token);
+    
+    // Find by ID with eager fetching of hospital (for admin/view pages)
+    @Query("SELECT d FROM Doctor d LEFT JOIN FETCH d.hospital WHERE d.id = :id")
+    Optional<Doctor> findByIdWithHospital(@Param("id") Long id);
 }

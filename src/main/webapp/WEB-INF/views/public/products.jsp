@@ -383,6 +383,46 @@
             color: #ddd;
             margin-bottom: 20px;
         }
+        
+        /* List View Styles */
+        .list-view .product-item { max-width: 100%; }
+        .list-view .product-card { flex-direction: row; }
+        .list-view .product-image { width: 200px; height: 200px; flex-shrink: 0; }
+        .list-view .product-info { flex: 1; }
+        
+        /* Mobile Sticky Cart Button */
+        .sticky-cart-btn { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            z-index: 1000; 
+            display: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-radius: 50px;
+            padding: 15px 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sticky-cart-btn { display: flex; align-items: center; gap: 8px; }
+            .filter-card { margin-bottom: 15px; padding: 15px; }
+            .product-card { margin-bottom: 15px; }
+            .sort-bar { flex-direction: column; gap: 15px; padding: 12px; }
+            .product-image { height: 180px; }
+            .cart-badge { width: 18px; height: 18px; font-size: 0.65rem; }
+        }
+        
+        @media (max-width: 576px) {
+            .shop-hero h1 { font-size: 1.8rem; }
+            .shop-hero { padding: 40px 0; }
+            .product-title { font-size: 0.9rem; }
+            .current-price { font-size: 1.1rem; }
+            .add-to-cart { padding: 6px 15px; font-size: 0.85rem; }
+        }
     </style>
 </head>
 <body>
@@ -532,10 +572,10 @@
 
                     <!-- Rating Filter -->
                     <div class="filter-card">
-                        <h5 class="filter-title"><i class="fas fa-star me-2"></i>Rating</h5>
+                        <h5 class="filter-title"><i class="fas fa-star me-2"></i>Customer Rating</h5>
                         <c:forEach begin="4" end="4" var="r">
-                            <a href="${pageContext.request.contextPath}/products?rating=4${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" 
-                               class="d-block mb-2 text-decoration-none ${selectedRating == 4 ? 'fw-bold' : ''}">
+                            <a href="${pageContext.request.contextPath}/products?rating=4${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}${not empty minPrice ? '&minPrice='.concat(minPrice) : ''}${not empty maxPrice ? '&maxPrice='.concat(maxPrice) : ''}" 
+                               class="d-block mb-2 text-decoration-none ${selectedRating == 4 ? 'fw-bold text-primary' : 'text-dark'}">
                                 <i class="fas fa-star text-warning"></i>
                                 <i class="fas fa-star text-warning"></i>
                                 <i class="fas fa-star text-warning"></i>
@@ -544,8 +584,8 @@
                                 & Up
                             </a>
                         </c:forEach>
-                        <a href="${pageContext.request.contextPath}/products?rating=3${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" 
-                           class="d-block mb-2 text-decoration-none ${selectedRating == 3 ? 'fw-bold' : ''}">
+                        <a href="${pageContext.request.contextPath}/products?rating=3${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}${not empty minPrice ? '&minPrice='.concat(minPrice) : ''}${not empty maxPrice ? '&maxPrice='.concat(maxPrice) : ''}" 
+                           class="d-block mb-2 text-decoration-none ${selectedRating == 3 ? 'fw-bold text-primary' : 'text-dark'}">
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
@@ -554,41 +594,108 @@
                             & Up
                         </a>
                     </div>
+
+                    <!-- Availability Filter -->
+                    <div class="filter-card">
+                        <h5 class="filter-title"><i class="fas fa-check-circle me-2"></i>Availability</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="inStock" checked onchange="applyFilters()">
+                            <label class="form-check-label" for="inStock">
+                                In Stock Only
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="outOfStock" onchange="applyFilters()">
+                            <label class="form-check-label" for="outOfStock">
+                                Include Out of Stock
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Discount Filter -->
+                    <div class="filter-card">
+                        <h5 class="filter-title"><i class="fas fa-percent me-2"></i>Discount</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="discount10" value="10" onchange="applyFilters()">
+                            <label class="form-check-label" for="discount10">
+                                10% or more
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="discount20" value="20" onchange="applyFilters()">
+                            <label class="form-check-label" for="discount20">
+                                20% or more
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="discount30" value="30" onchange="applyFilters()">
+                            <label class="form-check-label" for="discount30">
+                                30% or more
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="discount40" value="40" onchange="applyFilters()">
+                            <label class="form-check-label" for="discount40">
+                                40% or more
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <div class="filter-card">
+                        <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                            <i class="fas fa-times me-2"></i>Clear All Filters
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Products Grid -->
                 <div class="col-lg-9">
                     <!-- Sort Bar -->
-                    <div class="sort-bar d-flex justify-content-between align-items-center flex-wrap">
-                        <div>
-                            <span class="text-muted">Showing ${products.numberOfElements} of ${products.totalElements} products</span>
+                    <div class="sort-bar d-flex justify-content-between align-items-center flex-wrap mb-4" style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted">Showing <strong>${products.numberOfElements}</strong> of <strong>${products.totalElements}</strong> products</span>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary active" id="gridView" onclick="setView('grid')" title="Grid View">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="listView" onclick="setView('list')" title="List View">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <label class="me-2 text-muted">Sort by:</label>
-                            <select class="form-select form-select-sm" style="width: auto;" onchange="window.location.href=this.value">
-                                <option value="${pageContext.request.contextPath}/products?sort=newest${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" ${currentSort == 'newest' ? 'selected' : ''}>Newest</option>
-                                <option value="${pageContext.request.contextPath}/products?sort=popular${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" ${currentSort == 'popular' ? 'selected' : ''}>Popular</option>
-                                <option value="${pageContext.request.contextPath}/products?sort=price_low${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" ${currentSort == 'price_low' ? 'selected' : ''}>Price: Low to High</option>
-                                <option value="${pageContext.request.contextPath}/products?sort=price_high${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" ${currentSort == 'price_high' ? 'selected' : ''}>Price: High to Low</option>
-                                <option value="${pageContext.request.contextPath}/products?sort=rating${not empty selectedCategory ? '&category='.concat(selectedCategory) : ''}" ${currentSort == 'rating' ? 'selected' : ''}>Rating</option>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="text-muted mb-0">Sort by:</label>
+                            <select class="form-select form-select-sm" style="width: auto; min-width: 180px;" onchange="applySort(this.value)">
+                                <option value="newest" ${currentSort == 'newest' ? 'selected' : ''}>Newest First</option>
+                                <option value="popular" ${currentSort == 'popular' ? 'selected' : ''}>Popularity</option>
+                                <option value="price_low" ${currentSort == 'price_low' ? 'selected' : ''}>Price: Low to High</option>
+                                <option value="price_high" ${currentSort == 'price_high' ? 'selected' : ''}>Price: High to Low</option>
+                                <option value="rating" ${currentSort == 'rating' ? 'selected' : ''}>Customer Rating</option>
+                                <option value="discount" ${currentSort == 'discount' ? 'selected' : ''}>Discount</option>
                             </select>
                         </div>
                     </div>
 
                     <c:choose>
                         <c:when test="${not empty products.content}">
-                            <div class="row g-4">
+                            <div class="row g-4" id="productsContainer">
                                 <c:forEach items="${products.content}" var="product">
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-6 col-lg-4 product-item">
                                         <div class="product-card">
                                             <div class="product-image">
-                                                <a href="${pageContext.request.contextPath}/products/${product.slug}">
+                                                <a href="${pageContext.request.contextPath}/products/${not empty product.slug ? product.slug : product.id}">
                                                     <c:choose>
                                                         <c:when test="${not empty product.imageUrl}">
-                                                            <img src="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" alt="${product.productName}" onerror="this.src='${pageContext.request.contextPath}/images/no-product.png'">
+                                                            <img src="${product.imageUrl.startsWith('http') ? product.imageUrl : pageContext.request.contextPath.concat(product.imageUrl)}" alt="${product.productName}" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                            <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #f0f0f0; align-items: center; justify-content: center; color: #999;">
+                                                                <i class="fas fa-image" style="font-size: 2rem;"></i>
+                                                            </div>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <img src="${pageContext.request.contextPath}/images/no-product.png" alt="${product.productName}">
+                                                            <div class="product-image-placeholder" style="width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
+                                                                <i class="fas fa-image" style="font-size: 2rem;"></i>
+                                                            </div>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </a>
@@ -601,18 +708,21 @@
                                                     </c:if>
                                                 </div>
                                                 <div class="product-actions">
-                                                    <button class="action-btn ${wishlistIds.contains(product.id) ? 'wishlisted' : ''}" title="Add to Wishlist" onclick="addToWishlist(${product.id})">
+                                                    <button class="action-btn ${wishlistIds.contains(product.id) ? 'wishlisted' : ''}" title="Add to Wishlist" onclick="addToWishlist(${product.id}, event)">
                                                         <i class="fas fa-heart"></i>
                                                     </button>
-                                                    <a href="${pageContext.request.contextPath}/products/${product.slug}" class="action-btn" title="View Details">
+                                                    <button class="action-btn" title="Quick View" onclick="quickView(${product.id})">
                                                         <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    </button>
+                                                    <button class="action-btn" title="Share" onclick="shareProduct(${product.id}, '${product.productName}', event)">
+                                                        <i class="fas fa-share-alt"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="product-info">
                                                 <span class="product-category">${product.category.displayName}</span>
                                                 <h5 class="product-title">
-                                                    <a href="${pageContext.request.contextPath}/products/${product.slug}">${product.productName}</a>
+                                                    <a href="${pageContext.request.contextPath}/products/${not empty product.slug ? product.slug : product.id}">${product.productName}</a>
                                                 </h5>
                                                 <div class="product-rating">
                                                     <div class="stars">
@@ -629,8 +739,8 @@
                                                             <span class="original-price">₹<fmt:formatNumber value="${product.mrp}" pattern="#,##0"/></span>
                                                         </c:if>
                                                     </div>
-                                                    <button class="add-to-cart" onclick="addToCart(${product.id})">
-                                                        <i class="fas fa-shopping-cart"></i>
+                                                    <button class="add-to-cart" onclick="addToCart(${product.id}, event)">
+                                                        <i class="fas fa-shopping-cart"></i> Add to Cart
                                                     </button>
                                                 </div>
                                             </div>
@@ -638,6 +748,50 @@
                                     </div>
                                 </c:forEach>
                             </div>
+                            
+                            <!-- Recently Viewed Products -->
+                            <c:if test="${not empty recentViews && recentViews.size() > 0}">
+                                <div class="mt-5">
+                                    <h4 class="mb-4" style="font-weight: 600;">
+                                        <i class="fas fa-clock me-2"></i>Recently Viewed
+                                    </h4>
+                                    <div class="row g-3">
+                                        <c:forEach items="${recentViews}" var="recentView" end="4">
+                                            <div class="col-6 col-md-3 col-lg-2">
+                                                <a href="${pageContext.request.contextPath}/products/${not empty recentView.product.slug ? recentView.product.slug : recentView.product.id}" class="text-decoration-none">
+                                                    <div class="product-card" style="height: auto;">
+                                                        <div class="product-image" style="height: 150px;">
+                                                            <c:choose>
+                                                                <c:when test="${not empty recentView.product.imageUrl}">
+                                                                    <img src="${recentView.product.imageUrl.startsWith('http') ? recentView.product.imageUrl : pageContext.request.contextPath.concat(recentView.product.imageUrl)}" 
+                                                                         alt="${recentView.product.productName}"
+                                                                         onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                                    <div class="product-image-placeholder" style="display: none; width: 100%; height: 100%; background: #f0f0f0; align-items: center; justify-content: center; color: #999;">
+                                                                        <i class="fas fa-image" style="font-size: 1.5rem;"></i>
+                                                                    </div>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <div class="product-image-placeholder" style="width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
+                                                                        <i class="fas fa-image" style="font-size: 1.5rem;"></i>
+                                                                    </div>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </div>
+                                                        <div class="product-info" style="padding: 10px;">
+                                                            <h6 class="product-title" style="font-size: 0.85rem; margin-bottom: 5px;">
+                                                                ${recentView.product.productName}
+                                                            </h6>
+                                                            <div class="product-price" style="font-size: 0.9rem;">
+                                                                <span class="current-price">₹<fmt:formatNumber value="${recentView.product.price}" pattern="#,##0"/></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </c:if>
 
                             <!-- Pagination -->
                             <c:if test="${products.totalPages > 1}">
@@ -712,30 +866,250 @@
         </div>
     </footer>
 
+    <!-- Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quick View</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="quickViewContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Sticky Cart Button -->
+    <c:if test="${not empty currentUser && cartCount > 0}">
+        <button class="sticky-cart-btn" onclick="window.location.href='${pageContext.request.contextPath}/user/dashboard/cart'">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart (${cartCount})</span>
+        </button>
+    </c:if>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function addToCart(productId) {
+        // View Toggle (Grid/List)
+        function setView(view) {
+            localStorage.setItem('productView', view);
+            const container = document.getElementById('productsContainer');
+            const items = container.querySelectorAll('.product-item');
+            
+            if (view === 'list') {
+                container.classList.add('list-view');
+                items.forEach(item => {
+                    item.className = 'col-12 product-item';
+                });
+                document.getElementById('gridView').classList.remove('active');
+                document.getElementById('listView').classList.add('active');
+            } else {
+                container.classList.remove('list-view');
+                items.forEach(item => {
+                    item.className = 'col-md-6 col-lg-4 product-item';
+                });
+                document.getElementById('gridView').classList.add('active');
+                document.getElementById('listView').classList.remove('active');
+            }
+        }
+        
+        // Load saved view preference
+        const savedView = localStorage.getItem('productView') || 'grid';
+        if (savedView === 'list') {
+            setTimeout(() => setView('list'), 100);
+        }
+        
+        // Apply Sort
+        function applySort(sort) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sort', sort);
+            url.searchParams.set('page', '0'); // Reset to first page
+            window.location.href = url.toString();
+        }
+        
+        // Apply Filters
+        function applyFilters() {
+            const url = new URL(window.location.href);
+            const inStock = document.getElementById('inStock').checked;
+            const outOfStock = document.getElementById('outOfStock').checked;
+            
+            // Get discount filters
+            const discountFilters = [];
+            [10, 20, 30, 40].forEach(discount => {
+                if (document.getElementById('discount' + discount).checked) {
+                    discountFilters.push(discount);
+                }
+            });
+            
+            if (discountFilters.length > 0) {
+                url.searchParams.set('discount', discountFilters.join(','));
+            } else {
+                url.searchParams.delete('discount');
+            }
+            
+            url.searchParams.set('page', '0');
+            window.location.href = url.toString();
+        }
+        
+        // Clear Filters
+        function clearFilters() {
+            window.location.href = '${pageContext.request.contextPath}/products';
+        }
+        
+        // Add to Cart
+        function addToCart(productId, event) {
+            if (event) event.stopPropagation();
             <c:choose>
                 <c:when test="${not empty currentUser}">
-                    // User is logged in - redirect to add to cart
-                    window.location.href = '${pageContext.request.contextPath}/user/dashboard/cart/add/' + productId;
+                    var contextPath = '${pageContext.request.contextPath}';
+                    fetch(contextPath + '/user/dashboard/cart/add/' + productId, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'}
+                    })
+                    .then(function(response) {
+                        if (response.ok) {
+                            showToast('Product added to cart!', 'success');
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            showToast('Failed to add to cart', 'error');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        showToast('Error adding to cart', 'error');
+                    });
                 </c:when>
                 <c:otherwise>
-                    // User not logged in - redirect to login
                     window.location.href = '${pageContext.request.contextPath}/user/login?redirect=/products';
                 </c:otherwise>
             </c:choose>
         }
         
-        function addToWishlist(productId) {
+        // Add to Wishlist
+        function addToWishlist(productId, event) {
+            if (event) event.stopPropagation();
             <c:choose>
                 <c:when test="${not empty currentUser}">
-                    window.location.href = '${pageContext.request.contextPath}/user/dashboard/wishlist/add/' + productId;
+                    var contextPath = '${pageContext.request.contextPath}';
+                    fetch(contextPath + '/user/dashboard/wishlist/toggle/' + productId, {
+                        method: 'POST'
+                    })
+                    .then(function(response) {
+                        if (response.ok) {
+                            var btn = event.target.closest('.action-btn');
+                            if (btn) {
+                                btn.classList.toggle('wishlisted');
+                                showToast(btn.classList.contains('wishlisted') ? 'Added to wishlist!' : 'Removed from wishlist', 'success');
+                            }
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        showToast('Error updating wishlist', 'error');
+                    });
                 </c:when>
                 <c:otherwise>
                     window.location.href = '${pageContext.request.contextPath}/user/login?redirect=/products';
                 </c:otherwise>
             </c:choose>
+        }
+        
+        // Quick View
+        function quickView(productId) {
+            var modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            var content = document.getElementById('quickViewContent');
+            var contextPath = '${pageContext.request.contextPath}';
+            
+            content.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            modal.show();
+            
+            fetch(contextPath + '/products/' + productId + '/quick-view')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Product not found');
+                    return response.json();
+                })
+                .then(function(product) {
+                    var imageUrl = (product.imageUrl && product.imageUrl.startsWith('http')) 
+                        ? product.imageUrl 
+                        : (product.imageUrl ? contextPath + product.imageUrl : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=');
+                    var slug = product.slug || product.id;
+                    var productName = product.productName || 'Product';
+                    var price = (product.price || 0).toLocaleString('en-IN');
+                    var mrpHtml = '';
+                    if (product.mrp && product.mrp > product.price) {
+                        var mrp = product.mrp.toLocaleString('en-IN');
+                        var discount = product.discountPercentage || 0;
+                        mrpHtml = '<span class="text-muted text-decoration-line-through ms-2">₹' + mrp + '</span><span class="badge bg-danger ms-2">' + discount + '% OFF</span>';
+                    }
+                    var description = product.shortDescription || product.description || 'No description available';
+                    
+                    var imageHtml = imageUrl 
+                        ? '<img src="' + imageUrl + '" class="img-fluid rounded" alt="' + productName + '" onerror="this.onerror=null; this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+                          '<div style="display: none; width: 100%; height: 300px; background: #f0f0f0; align-items: center; justify-content: center; color: #999; border-radius: 0.375rem;"><i class="fas fa-image" style="font-size: 3rem;"></i></div>'
+                        : '<div style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; border-radius: 0.375rem;"><i class="fas fa-image" style="font-size: 3rem;"></i></div>';
+                    content.innerHTML = 
+                        '<div class="row g-4">' +
+                            '<div class="col-md-6">' +
+                                imageHtml +
+                            '</div>' +
+                            '<div class="col-md-6">' +
+                                '<h4 class="mb-3">' + productName + '</h4>' +
+                                '<div class="mb-3">' +
+                                    '<span class="h5 text-primary fw-bold">₹' + price + '</span>' + mrpHtml +
+                                '</div>' +
+                                '<p class="text-muted mb-3">' + description + '</p>' +
+                                '<div class="d-flex gap-2 flex-wrap">' +
+                                    '<button class="btn btn-primary" onclick="addToCart(' + product.id + ', event); var modalEl = document.getElementById(\'quickViewModal\'); if(modalEl) { bootstrap.Modal.getInstance(modalEl).hide(); }">' +
+                                        '<i class="fas fa-shopping-cart me-2"></i>Add to Cart' +
+                                    '</button>' +
+                                    '<a href="' + contextPath + '/products/' + slug + '" class="btn btn-outline-primary">' +
+                                        '<i class="fas fa-eye me-2"></i>View Details' +
+                                    '</a>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    content.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Error loading product details. Please try again.</div>';
+                });
+        }
+        
+        // Share Product
+        function shareProduct(productId, productName, event) {
+            if (event) event.stopPropagation();
+            const url = window.location.origin + '${pageContext.request.contextPath}/products/' + productId;
+            const text = `Check out ${productName} on AyurVeda!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: productName,
+                    text: text,
+                    url: url
+                });
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Link copied to clipboard!', 'success');
+                });
+            }
+        }
+        
+        // Toast Notification
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            var alertType = type === 'success' ? 'success' : 'danger';
+            var iconType = type === 'success' ? 'check-circle' : 'exclamation-circle';
+            toast.className = 'alert alert-' + alertType + ' position-fixed top-0 end-0 m-3';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = '<i class="fas fa-' + iconType + ' me-2"></i>' + message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
     </script>
 </body>

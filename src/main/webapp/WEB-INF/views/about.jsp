@@ -473,8 +473,8 @@ footer{
                     <ul class="footer-links">
                         <li><a href="${pageContext.request.contextPath}/">Home</a></li>
                         <li><a href="${pageContext.request.contextPath}/about">About Us</a></li>
-                        <li><a href="${pageContext.request.contextPath}/services">Services</a></li>
-                        <li><a href="${pageContext.request.contextPath}/terms and condition">Services</a></li>
+                        <li><a href="${pageContext.request.contextPath}/terms-and-conditions">Terms & Conditions</a></li>
+                        <li><a href="${pageContext.request.contextPath}/privacy-policy">Privacy Policy</a></li>
                         <li><a href="${pageContext.request.contextPath}/private and policy">Services</a></li>
             <li><a href="${pageContext.request.contextPath}/contact">Contact</a></li>
                     </ul>

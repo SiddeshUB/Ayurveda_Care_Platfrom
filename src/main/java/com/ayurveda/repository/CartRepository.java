@@ -15,13 +15,20 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
     // Find cart items by user
-    List<Cart> findByUserIdOrderByCreatedAtDesc(Long userId);
+    // Eagerly fetch product, product.vendor, and vendor to avoid LazyInitializationException
+    @Query("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.product p LEFT JOIN FETCH p.vendor LEFT JOIN FETCH c.vendor WHERE c.user.id = :userId ORDER BY c.createdAt DESC")
+    List<Cart> findByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
 
     // Find active cart items (not saved for later)
-    List<Cart> findByUserIdAndSavedForLaterFalseOrderByCreatedAtDesc(Long userId);
+    // Use explicit query to handle NULL values properly (NULL means not saved for later)
+    // Eagerly fetch product, product.vendor, and vendor to avoid LazyInitializationException
+    @Query("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.product p LEFT JOIN FETCH p.vendor LEFT JOIN FETCH c.vendor WHERE c.user.id = :userId AND (c.savedForLater = false OR c.savedForLater IS NULL) ORDER BY c.createdAt DESC")
+    List<Cart> findByUserIdAndSavedForLaterFalseOrderByCreatedAtDesc(@Param("userId") Long userId);
 
     // Find saved for later items
-    List<Cart> findByUserIdAndSavedForLaterTrueOrderByCreatedAtDesc(Long userId);
+    // Eagerly fetch product, product.vendor, and vendor to avoid LazyInitializationException
+    @Query("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.product p LEFT JOIN FETCH p.vendor LEFT JOIN FETCH c.vendor WHERE c.user.id = :userId AND c.savedForLater = true ORDER BY c.createdAt DESC")
+    List<Cart> findByUserIdAndSavedForLaterTrueOrderByCreatedAtDesc(@Param("userId") Long userId);
 
     // Find by user and product
     Optional<Cart> findByUserIdAndProductId(Long userId, Long productId);
@@ -32,10 +39,11 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     // Count items in cart
     long countByUserId(Long userId);
 
-    long countByUserIdAndSavedForLaterFalse(Long userId);
+    @Query("SELECT COUNT(c) FROM Cart c WHERE c.user.id = :userId AND (c.savedForLater = false OR c.savedForLater IS NULL)")
+    long countByUserIdAndSavedForLaterFalse(@Param("userId") Long userId);
 
     // Get cart total
-    @Query("SELECT SUM(c.totalPrice) FROM Cart c WHERE c.user.id = :userId AND c.savedForLater = false")
+    @Query("SELECT SUM(c.totalPrice) FROM Cart c WHERE c.user.id = :userId AND (c.savedForLater = false OR c.savedForLater IS NULL)")
     BigDecimal getCartTotal(@Param("userId") Long userId);
 
     // Delete cart item

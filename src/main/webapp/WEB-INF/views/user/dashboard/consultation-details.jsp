@@ -296,6 +296,26 @@
         color: #1a2e1a;
     }
     
+    .consultation-details-page .btn-view {
+        padding: 10px 20px;
+        background: #2d4a2d;
+        color: #fff;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .consultation-details-page .btn-view:hover {
+        background: #1a2e1a;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
     .consultation-details-page .consultation-id {
         background: #f8f6f1;
         padding: 10px 20px;
@@ -457,14 +477,14 @@
                         </div>
                     </c:if>
                     
-                    <c:if test="${consultation.fee != null}">
+                    <c:if test="${consultation.consultationFee != null}">
                         <div class="info-item">
                             <div class="info-icon">
                                 <i class="fas fa-rupee-sign"></i>
                             </div>
                             <div>
                                 <div class="info-label">Consultation Fee</div>
-                                <div class="info-value">₹${consultation.fee}</div>
+                                <div class="info-value">₹${consultation.consultationFee}</div>
                             </div>
                         </div>
                     </c:if>
@@ -491,6 +511,23 @@
                     </h3>
                     <div class="notes-box">
                         <p class="notes-text">${consultation.doctorNotes}</p>
+                    </div>
+                </div>
+            </c:if>
+            
+            <!-- Prescription Link (if available) -->
+            <c:if test="${not empty prescription}">
+                <div class="info-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-prescription"></i> Prescription
+                    </h3>
+                    <div class="reason-box" style="background: linear-gradient(135deg, rgba(45, 74, 45, 0.1), rgba(201, 162, 39, 0.1));">
+                        <p class="reason-text" style="margin-bottom: 15px;">
+                            A prescription has been created for this consultation.
+                        </p>
+                        <a href="${pageContext.request.contextPath}/user/dashboard/prescriptions/${prescription.id}" class="btn-view" style="display: inline-flex;">
+                            <i class="fas fa-eye"></i> View Prescription
+                        </a>
                     </div>
                 </div>
             </c:if>

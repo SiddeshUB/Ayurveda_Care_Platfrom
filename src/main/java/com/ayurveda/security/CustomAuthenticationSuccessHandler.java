@@ -31,6 +31,8 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
             HttpSession session = request.getSession();
             session.setAttribute("userId", user.getId());
             session.setAttribute("currentUser", user);
+            // Set flag to show welcome message on dashboard
+            session.setAttribute("showWelcome", true);
         });
         
         // Set default target URL - redirect to home page

@@ -257,7 +257,7 @@
         .why-choose-us {
             position: relative;
             background: linear-gradient(rgba(253, 250, 244, 0.95), rgba(253, 250, 244, 0.98)),
-                        url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+                        url('https://images.unsplash.com/photo-1552058544-f2b08422138a?auto=format&fit=crop&w=800&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -672,7 +672,7 @@
             color: #f5e4c3;
             background: 
                 linear-gradient(rgba(15, 22, 15, 0.95), rgba(31, 42, 31, 0.95)),
-                url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+                url('https://images.unsplash.com/photo-1600841929510-1cbbf5f39b5f?auto=format&fit=crop&w=800&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -1060,7 +1060,7 @@
                 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-rupee-sign"></i>
+                        <i class="fas fa-tag"></i>
                     </div>
                     <h3 class="feature-title">Transparent Pricing</h3>
                     <p class="feature-desc">Clear treatment packages, pricing, inclusions and accommodation details for informed decisions. No hidden costs, complete transparency in every aspect of your healing journey.</p>
@@ -1137,7 +1137,7 @@
                 </div>
                 
                 <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ayurvedic Massage">
+                   <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Therapist performing a neck massage on a client">
                     <div class="gallery-overlay">
                         <h4 class="gallery-title">Therapeutic Massage</h4>
                         <p style="color: #f5e4c3">Traditional Abhyanga and body treatments</p>
@@ -1145,7 +1145,8 @@
                 </div>
                 
                 <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Wellness Retreat">
+                    <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80
+" alt="Wellness Retreat">
                     <div class="gallery-overlay">
                         <h4 class="gallery-title">Wellness Retreats</h4>
                         <p style="color: #f5e4c3">Serene environments for holistic healing</p>
@@ -1153,7 +1154,8 @@
                 </div>
                 
                 <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ayurvedic Consultation">
+                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=800&q=80
+" alt="Ayurvedic Consultation">
                     <div class="gallery-overlay">
                         <h4 class="gallery-title">Doctor Consultation</h4>
                         <p style="color: #f5e4c3">Personalized Ayurvedic diagnosis and treatment</p>
@@ -1426,8 +1428,8 @@
                         <li><a href="${pageContext.request.contextPath}/"><i class="fas fa-chevron-right"></i> Home</a></li>
                         <li><a href="${pageContext.request.contextPath}/about"><i class="fas fa-chevron-right"></i> About Us</a></li>
                         <li><a href="${pageContext.request.contextPath}/services"><i class="fas fa-chevron-right"></i> Services</a></li>
-                        <li><a href="${pageContext.request.contextPath}/terms and condition">Services</a></li>
-                        <li><a href="${pageContext.request.contextPath}/private and policy">Services</a></li>
+                        <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><i class="fas fa-chevron-right"></i>Terms & Conditions</a></li>
+                        <li><a href="${pageContext.request.contextPath}/privacy-policy"><i class="fas fa-chevron-right"></i>Privacy Policy</a></li>
                         <li><a href="${pageContext.request.contextPath}/contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
                     </ul>
                 </div>

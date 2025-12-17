@@ -85,4 +85,8 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
            "LOWER(o.shippingEmail) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(o.shippingPhone) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<ProductOrder> searchOrders(@Param("keyword") String keyword, Pageable pageable);
+
+    // Find by ID with eager fetching of orderItems, user, and items' vendor/product (for order details page)
+    @Query("SELECT DISTINCT o FROM ProductOrder o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.vendor LEFT JOIN FETCH oi.product LEFT JOIN FETCH o.user WHERE o.id = :id")
+    Optional<ProductOrder> findByIdWithItems(@Param("id") Long id);
 }

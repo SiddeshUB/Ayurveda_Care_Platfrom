@@ -72,6 +72,53 @@
         box-shadow: 0 4px 8px rgba(230, 181, 92, 0.3);
     }
     
+    /* Dashboard Link - Professional Styling */
+    .nav-links a.nav-dashboard {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        background: rgba(230, 181, 92, 0.15);
+        border-radius: 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .nav-links a.nav-dashboard i {
+        font-size: 16px;
+        color: #e6b55c;
+    }
+    
+    .nav-links a.nav-dashboard:hover {
+        background: rgba(230, 181, 92, 0.25);
+        color: #e6b55c !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(230, 181, 92, 0.3);
+    }
+    
+    .nav-links a.nav-dashboard:hover i {
+        transform: scale(1.1);
+    }
+    
+    /* Active state for Dashboard */
+    .nav-links a.nav-dashboard.active {
+        background: rgba(230, 181, 92, 0.3);
+        color: #e6b55c !important;
+    }
+    
+    .nav-links a.nav-dashboard.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: #e6b55c;
+        border-radius: 2px;
+    }
+    
     /* User Menu Dropdown - Amazon Style */
     .user-menu-container {
         position: relative;
@@ -85,10 +132,14 @@
         border-radius: 20px;
         background: rgba(230, 181, 92, 0.1);
         transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid transparent;
     }
     
     .user-name-link:hover {
         background: rgba(230, 181, 92, 0.2);
+        border-color: rgba(230, 181, 92, 0.3);
+        transform: translateY(-1px);
     }
     
     .user-name-link i.fa-user-circle {
